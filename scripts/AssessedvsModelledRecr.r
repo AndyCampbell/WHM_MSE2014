@@ -1,8 +1,7 @@
 #assessed vs modelled recruitment investigations
-#recap
+#comparison of results using an FLR approach (as by Jose) and the equivalent FPRESS
+#plots generated in plots subfolder
 #27/11/2014
-
-#copied from sandbox script
 
 #clean up
 rm(list=ls())
