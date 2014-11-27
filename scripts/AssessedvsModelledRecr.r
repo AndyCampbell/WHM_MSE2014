@@ -8,7 +8,69 @@ rm(list=ls())
 gc()
 
 #need SADutils.r
+source(".Rprofile")
 source(".//source//SADutils.r")
+source(".//source//recruit.r")
+
+#initial effort - draws a recruit for each combination of iteration, year and historic value of SSB
+nits <- 1000
+years <- 200
+startyear <- 2014
+iters <- seq(1,nits)
+indata <- read.table(".\\indata\\SADMSE2014_WHMParams_15_09_2014.dat",header=TRUE,sep=",")
+dfHistSR <- read.table(".\\indata\\SADMSE2014_SRPairs_15_09_2014.dat",header=TRUE,sep=",")
+SR.types<-f.RandSR(nits=nits)
+
+lSR<-lapply(iters,FUN=f.SADSR,nits=nits,SADparams=indata,SRpairs=dfHistSR,SR.types=SR.types,startyear=startyear,years=years)
+
+
+#temp vectors for results of recruitment draws based on historic ssb values (50 years, 33 historic vals)
+ssb.out <- vector("numeric",length=nits*50*33)
+rec.out <- vector("numeric",length=nits*50*33)
+idx <- 1
+
+#pseudo run
+for (iter in seq(1:nits)){
+  for (y in (seq(from=2151,2200))) {
+    #draw recruits for each historic SSB value
+    for (s in (1:length(lSR[[iter]]$HistSSB))){
+      rec.out[idx] <- f.recruit34(log.file="temp.log", ssb=lSR[[iter]]$HistSSB[s][[1]],
+                                  SRModel=lSR[[iter]], year=y, debug=0)[1]
+      ssb.out[idx] <- lSR[[iter]]$HistSSB[s][[1]]
+      idx <- idx + 1
+      #update progress
+      if (idx%%10000==0){cat(idx/(nits*50*33),"\n")}
+    }
+  }
+}
+
+
+#plot the results
+png(filename=".\\plots\\Recr_ECDF.png",width=1200,height=600)
+
+layout(matrix(c(1,2),nrow=1,ncol=2,byrow=TRUE))
+
+plot(ssb.out,rec.out,pch=".",ylim=c(0,3e7),xlim=c(0,6e6))
+
+noSpikeYears <- sprintf("%04d", c(seq(1983,2000),seq(2002,2012)))
+
+for (iter in seq(1,1000)){
+  points(dfHistSR[iter,paste("Bsp",noSpikeYears,sep="_")],
+         dfHistSR[iter,paste("Rec",noSpikeYears,sep="_")],
+         pch=20,
+         cex=0.5,
+         col="red")
+}
+
+plot(ecdf(rec.out/1e6),xlim=c(0,20))
+lines(ecdf(unlist(dfHistSR[,paste("Rec",noSpikeYears,sep="_")]/1e6)),col="red")
+
+dev.off()
+
+
+
+#second effort using FLR also and Jose's plotting scheme for comparison with his output
+
 
 #observed Stock and Recruit values
 SRpairs = read.table(".\\indata\\SADMSE2014_SRPairs_15_09_2014.dat",header=TRUE,sep=",")
@@ -33,38 +95,6 @@ rec.mod.FLR<-c()
 rec.mod.FPRESS<-c()
 
 #for FPRESS approach we need the function used to draw recruitment
-#the function that generates recruitment, copy of recruit34 from recruit.r but vectorised
-f.vrecruit34 <- function(log.file,ssb,SRModel,year,debug=0){
-  
-  #residual
-  eta <- SRModel$Resids[as.character(year)]
-  
-  #initialise return vectors
-  #recruitment value
-  recr <- vector("numeric",length=length(year))
-  #deterministic value
-  E <- vector("numeric",length=length(year))
-  
-  #apply appropriate recruitment formulation
-  E = switch(substr(SRModel$model,0,2),
-             HS = SRModel$AParam*(ssb + sqrt(SRModel$BParam^2 + 0.25*SRModel$GParam^2) - sqrt((ssb - SRModel$BParam)^2 + 0.25*SRModel$GParam^2)),
-             RK = as.numeric(SRModel$AParam)*as.numeric(ssb)*exp(-as.numeric(SRModel$BParam)*as.numeric(ssb)),
-             BH = as.numeric(SRModel$AParam)*as.numeric(ssb)/(as.numeric(SRModel$BParam)+as.numeric(ssb))
-  )
-  
-  #apply residual
-  recr <- E*exp(eta)
-  
-  #no ssb, no recruitment
-  recr[ssb==0.001] <- 0
-  E[ssb==0.001] <- 0
-  
-  ret <- list(recr=recr,eta=eta,E=E)
-  
-  ret
-  
-}
-
 
 #for FLR we need a function for smooth hockey stick model for use in FLSR (Ricker and B&H already available)
 myHS <- function(){
