@@ -45,9 +45,6 @@ f.SADEgg <- function(iter,nits,SADparams,EggHist,StockWeights,NatMor,Mat,
   ResidHist <- vector("numeric",length=length(datYrs))
   ResidFut <- vector("numeric",length=length(futYrs))
     
-  #cat("datYrs=",datYrs,"\n")
-  #cat("futYrs=",futYrs,"\n")
-  
   #historic residuals
   for (d in (1:length(datYrs))){
     
@@ -59,8 +56,6 @@ f.SADEgg <- function(iter,nits,SADparams,EggHist,StockWeights,NatMor,Mat,
     } else {
       SW <- unlist(StockWeights[StockWeights$Year==datYrs[d],2:13])
     }
-    
-    #cat("SW=",SW,"\n")
     
     #Num at age
     Num <- unlist(NumatAge[iter,paste('y',datYrs[d],'a',seq(0,11),sep="")])
@@ -78,8 +73,6 @@ f.SADEgg <- function(iter,nits,SADparams,EggHist,StockWeights,NatMor,Mat,
     m <- unlist(NatMor[NatMor$Year==datYrs[d],2:13])
     
     Egg.mod <- sum(SADparams$qFec[iter]*(SADparams$aFec[iter] + SADparams$bFec[iter]*SW)*SexRatio*Num*SW*maturity*exp(-1*(PF*f+PM*m)))
-    
-    #cat("Egg.mod=",Egg.mod,"\n")
     
     #residual (log)
     ResidHist[d] <- log(1000.0*EggHist$EggCount[EggHist$Year==EggHist$Year[d]]) - log(Egg.mod)
@@ -123,19 +116,18 @@ f.SADSR <- function(iter,nits,SADparams,SRpairs,SR.types,startyear,years){
   #startyear is the first year of the simulation
   #years number of years of simulation
   
-  #data years (no 1982,2001 spike years as models were not fit to data including these points)
+  #data years
   datYrs<-c(as.character(seq(1982,startyear-2)))
   
   #vectors for historic and future residuals
   Resids <- vector("numeric",length=length(datYrs)+years+1)
   names(Resids) <- seq(1982,length=length(Resids))
   
-  ResidFut <- vector("numeric",length=years+1)  #additional year for year prior to start
-  
+
   #Beverton & Holt
   if (SR.types[iter] == 'BH') {
     
-    #historic residuals
+    #calc historic residuals
     for (d in 1:length(datYrs)){
       Resids[d] <- log(SRpairs[iter,paste("Rec_",datYrs[d],sep="")]) - log(as.numeric(SADparams$abh[iter])*as.numeric(SRpairs[iter,paste("Bsp_",datYrs[d],sep="")])/(as.numeric(SADparams$bbh[iter])+as.numeric(SRpairs[iter,paste("Bsp_",datYrs[d],sep="")])))
     }
@@ -147,36 +139,19 @@ f.SADSR <- function(iter,nits,SADparams,SRpairs,SR.types,startyear,years){
     last.resid <- Resids[length(datYrs)]
     
     for (y in ((length(datYrs)+1):length(Resids))){
-      Resids[y]<-SADparams$scorbh[iter]*last.resid + sqrt(1-SADparams$scorbh[iter]^2)*ResidDraws[y-length(datYrs)]
+      Resids[y] <- SADparams$scorbh[iter]*last.resid + sqrt(1-SADparams$scorbh[iter]^2)*ResidDraws[y-length(datYrs)]
       last.resid <- Resids[y]
     }
     
     names(Resids) <- seq(1982,length=length(Resids))
     
-    #historic SSB
-    HistSSB <- SRpairs[iter,paste("Bsp_",c(as.character(seq(1982,startyear))),sep="")]
-    names(HistSSB) <- as.character(seq(1982,startyear))
-
-    #historic recruits
-    HistRec <- SRpairs[iter,paste("Rec_",c(as.character(seq(1982,startyear-2))),sep="")]
-    names(HistRec) <- as.character(seq(1982,startyear-2))
+    FLSRmodel <- 'bevholt'
+    AParam <- SADparams$abh[iter]
+    BParam <- SADparams$bbh[iter]
+    GParam <- NA
+    SigR <- SADparams$sigRbh[iter]
+    scor <- SADparams$scorbh[iter]
     
-    ret <- list(model = 'BH',
-                FLSRmodel = 'bevholt',
-                AParam = SADparams$abh[iter],
-                BParam = SADparams$bbh[iter],
-                GParam = NA,
-                SigR = SADparams$sigRbh[iter],
-                scor = SADparams$scorbh[iter],
-                Rec1982 = SADparams$Rec1982[iter],
-                Rec2001 = SADparams$Rec2001[iter],
-                SSB1982 = SADparams$SSB1982[iter],
-                SSB2001 = SADparams$SSB2001[iter],
-                Bloss = SADparams$Bloss[iter],
-                Resids = Resids,
-                HistSSB = HistSSB,
-                HistRec = HistRec)
-
   } else if (SR.types[iter] == 'RK'){
     
     #historic residuals
@@ -191,35 +166,19 @@ f.SADSR <- function(iter,nits,SADparams,SRpairs,SR.types,startyear,years){
     last.resid <- Resids[length(datYrs)]
 
     for (y in ((length(datYrs)+1):length(Resids))){
-      Resids[y] <- SADparams$scorbh[iter]*last.resid + sqrt(1-SADparams$scorrk[iter]^2)*ResidDraws[y-length(datYrs)]
+      Resids[y] <- SADparams$scorrk[iter]*last.resid + sqrt(1-SADparams$scorrk[iter]^2)*ResidDraws[y-length(datYrs)]
       last.resid <- Resids[y]
     }
     
     names(Resids) <- seq(1982,length=length(Resids))
 
-    #historic SSB
-    HistSSB <- SRpairs[iter,paste("Bsp_",c(as.character(seq(1982,startyear))),sep="")]
-    names(HistSSB) <- as.character(seq(1982,startyear))
+    FLSRmodel <- 'ricker'
+    AParam <- SADparams$ark[iter]
+    BParam <- SADparams$brk[iter]
+    GParam <- NA
+    SigR <- SADparams$sigRrk[iter]
+    scor <- SADparams$scorrk[iter]
     
-    #historic recruits
-    HistRec <- SRpairs[iter,paste("Rec_",c(as.character(seq(1982,startyear-2))),sep="")]
-    names(HistRec) <- as.character(seq(1982,startyear-2))
-    
-    ret <- list(model = 'RK',
-                FLSRmodel = 'ricker',
-                AParam = SADparams$ark[iter],
-                BParam = SADparams$brk[iter],
-                GParam = NA,
-                SigR = SADparams$sigRrk[iter],
-                scor = SADparams$scorrk[iter],
-                Rec1982 = SADparams$Rec1982[iter],
-                Rec2001 = SADparams$Rec2001[iter],
-                SSB1982 = SADparams$SSB1982[iter],
-                SSB2001 = SADparams$SSB2001[iter],
-                Bloss = SADparams$Bloss[iter],
-                Resids = Resids,
-                HistSSB = HistSSB,
-                HistRec = HistRec)
   } else {
     
     #Smooth Hockey Stick
@@ -236,37 +195,33 @@ f.SADSR <- function(iter,nits,SADparams,SRpairs,SR.types,startyear,years){
     last.resid <- Resids[length(datYrs)]
 
     for (y in ((length(datYrs)+1):length(Resids))){
-      Resids[y] <- SADparams$scorbh[iter]*last.resid + sqrt(1-SADparams$scorhs[iter]^2)*ResidDraws[y-length(datYrs)]
+      Resids[y] <- SADparams$scorhs[iter]*last.resid + sqrt(1-SADparams$scorhs[iter]^2)*ResidDraws[y-length(datYrs)]
       last.resid <- Resids[y]
     }
     
     names(Resids) <- seq(1982,length=length(Resids))
     
-    #historic SSB
-    HistSSB <- SRpairs[iter,paste("Bsp_",c(as.character(seq(1982,startyear))),sep="")]
-    names(HistSSB) <- as.character(seq(1982,startyear))
+    FLSRmodel <- 'segreg'
+    AParam <- SADparams$ahs[iter]
+    BParam <- SADparams$bhs[iter]
+    GParam <- SADparams$ghs[iter]
+    SigR <- SADparams$sigRhs[iter]
+    scor <- SADparams$scorhs[iter]
     
-    #historic recruits
-    HistRec <- SRpairs[iter,paste("Rec_",c(as.character(seq(1982,startyear-2))),sep="")]
-    names(HistRec) <- as.character(seq(1982,startyear-2))
-    
-    ret <- list(model = 'HS',
-                FLSRmodel = 'segreg',
-                AParam = SADparams$ahs[iter],
-                BParam = SADparams$bhs[iter],
-                GParam = SADparams$ghs[iter],
-                SigR = SADparams$sigRhs[iter],
-                scor = SADparams$scorhs[iter],
-                Rec1982 = SADparams$Rec1982[iter],
-                Rec2001 = SADparams$Rec2001[iter],
-                SSB1982 = SADparams$SSB1982[iter],
-                SSB2001 = SADparams$SSB2001[iter],
-                Bloss = SADparams$Bloss[iter],
-                Resids = Resids,
-                HistSSB = HistSSB,
-                HistRec = HistRec)
   }
+
+  #historic recruits
+  HistRec <- SRpairs[iter,paste("Rec_",c(as.character(seq(1982,startyear-2))),sep="")]
+  names(HistRec) <- as.character(seq(1982,startyear-2))
   
-  ret
+  #historic SSB
+  HistSSB <- SRpairs[iter,paste("Bsp_",c(as.character(seq(1982,startyear))),sep="")]
+  names(HistSSB) <- as.character(seq(1982,startyear))
+
+  
+  list(model = SR.types[iter], FLSRmodel = FLSRmodel, AParam = AParam, BParam = BParam, 
+       GParam = GParam, Rec1982 = SADparams$Rec1982[iter], Rec2001 = SADparams$Rec2001[iter], 
+       SSB1982 = SADparams$SSB1982[iter], SSB2001 = SADparams$SSB2001[iter], 
+       Bloss = SADparams$Bloss[iter], Resids = Resids, HistSSB = HistSSB, HistRec = HistRec)
   
 }
