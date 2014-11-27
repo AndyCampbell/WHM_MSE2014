@@ -1259,3 +1259,35 @@ f.recruit34 <- function(log.file,ssb,SRModel,year,debug=0){
   ret
   
 }
+
+#the function that generates recruitment, copy of recruit34 from recruit.r but vectorised
+f.vrecruit34 <- function(log.file,ssb,SRModel,year,debug=0){
+  
+  #residual
+  eta <- SRModel$Resids[as.character(year)]
+  
+  #initialise return vectors
+  #recruitment value
+  recr <- vector("numeric",length=length(year))
+  #deterministic value
+  E <- vector("numeric",length=length(year))
+  
+  #apply appropriate recruitment formulation
+  E = switch(substr(SRModel$model,0,2),
+             HS = SRModel$AParam*(ssb + sqrt(SRModel$BParam^2 + 0.25*SRModel$GParam^2) - sqrt((ssb - SRModel$BParam)^2 + 0.25*SRModel$GParam^2)),
+             RK = as.numeric(SRModel$AParam)*as.numeric(ssb)*exp(-as.numeric(SRModel$BParam)*as.numeric(ssb)),
+             BH = as.numeric(SRModel$AParam)*as.numeric(ssb)/(as.numeric(SRModel$BParam)+as.numeric(ssb))
+  )
+  
+  #apply residual
+  recr <- E*exp(eta)
+  
+  #no ssb, no recruitment
+  recr[ssb==0.001] <- 0
+  E[ssb==0.001] <- 0
+  
+  ret <- list(recr=recr,eta=eta,E=E)
+  
+  ret
+  
+}
