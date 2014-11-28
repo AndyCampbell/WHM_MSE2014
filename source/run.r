@@ -1748,7 +1748,7 @@ f.FPRESS.Run<-function(runref="missing",saveref="missing",batch=0,debug=0,runlog
                           recruit31(log.file,ssb=ssb.J1.true,f.SADSR(iter,iterations,indata,dfHistSR,SR.types),eta=eta,debug=debug),
                           recruit32(log.file,ssb=ssb.J1.true,lSR[[iter]],eta=eta,debug=debug,trunc=truncateresid),
                           recruit33(log.file,ssb=ssb.J1.true,f.SADSR(iter,iterations,indata,dfHistSR,SR.types),eta=eta,debug=debug),
-                          f.recruit34(log.file,ssb=ssb.J1.true,lSR[[iter]],year=simyear,debug=debug)
+                          f.recruit34(log.file=log.file, ssb=ssb.J1.true, SRModel=lSR[[iter]], year=simyear, debug=debug)
         )
 								
 				#override recruitment if a once-off pulse recruitment is randomly selected
@@ -1766,8 +1766,9 @@ f.FPRESS.Run<-function(runref="missing",saveref="missing",batch=0,debug=0,runlog
                 
               #calculate residual for iteration specific SR model
               rec.res <- log(lSR[[iter]][[paste("Rec",rec.spikes[year],sep="")]]) - 
-                         log(f.recruit25(log.file,ssb=lSR[[iter]][[paste("SSB",rec.spikes[year],sep="")]],lSR[[iter]],debug=debug,trunc=FALSE)[3])
-                
+                         log(f.recruit25(log.file=log.file, ssb = lSR[[iter]][[paste("SSB",rec.spikes[year],sep="")]],
+                                         SRModel=lSR[[iter]], debug=debug, trunc=FALSE)[3])
+              
               #overwrite value returned by recruit** function
               rec_ret[1] <- rec_ret[3]*exp(rec.res)
                 
@@ -1866,7 +1867,7 @@ f.FPRESS.Run<-function(runref="missing",saveref="missing",batch=0,debug=0,runlog
 	       	}
 
 					#apply the assessment model to calculate new values for ssb and fbar (see assessment.r for details)
-					assres<-assessment(log.file,ssb.true=ssb.J1.true,
+					assres<-assessment(log.file,ssb.true = ssb.J1.true,
                              fbar,
                              if (det) {1} else {ssbassessbias},
                              if (det) {0} else {ssbassesscv},
@@ -2398,7 +2399,7 @@ f.FPRESS.Run<-function(runref="missing",saveref="missing",batch=0,debug=0,runlog
 				#save vals in temp vars for initialisation of population in next year
 				newyearplus1 <- yearplus1
         ssb.J1.true <- newyearplus1*mature*spwnweight
-        
+
         #no longer required (targetyield setting)
 				#if in the next year of the simulation an HCR is going to be applied then revert
 				#ftac back to the resolution.ftac value
