@@ -220,8 +220,9 @@ f.SADSR <- function(iter,nits,SADparams,SRpairs,SR.types,startyear,years){
 
   
   list(model = SR.types[iter], FLSRmodel = FLSRmodel, AParam = AParam, BParam = BParam, 
-       GParam = GParam, Rec1982 = SADparams$Rec1982[iter], Rec2001 = SADparams$Rec2001[iter], 
-       SSB1982 = SADparams$SSB1982[iter], SSB2001 = SADparams$SSB2001[iter], 
-       Bloss = SADparams$Bloss[iter], Resids = Resids, HistSSB = HistSSB, HistRec = HistRec)
+       GParam = GParam, SigR = SigR, scor = scor, Rec1982 = SADparams$Rec1982[iter], 
+       Rec2001 = SADparams$Rec2001[iter], SSB1982 = SADparams$SSB1982[iter], 
+       SSB2001 = SADparams$SSB2001[iter], Bloss = SADparams$Bloss[iter], Resids = Resids, 
+       HistSSB = HistSSB, HistRec = HistRec)
   
 }
