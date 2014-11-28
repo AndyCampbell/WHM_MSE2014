@@ -978,13 +978,13 @@ f.FPRESS.Run<-function(runref="missing",saveref="missing",batch=0,debug=0,runlog
     #SR, Egg models
     if (startyear==2013){
       
-      lSR <- lapply(seq(1,iterations),FUN = f.SADSR,nits = iterations,SADparams = indata,
+      lSR <- lapply(seq(1,iterations),FUN = f.SADSR,SADparams = indata,
                     SRpairs = read.table("C:\\FPRESS\\HOM-WEST\\MSE2014\\Baseline\\indata\\SADMSE2014_SRPairs_29_07_2014.dat",header=TRUE,sep=","),
                     SR.types = f.RandSR(props=c(0.49,0.28,0.23),nits=iterations),startyear = startyear,years = years)
       
     } else if (startyear==2014) {
       
-      lSR <- lapply(seq(1,iterations),FUN = f.SADSR,nits = iterations,SADparams = indata,
+      lSR <- lapply(seq(1,iterations),FUN = f.SADSR,SADparams = indata,
                     SRpairs = read.table("C:\\FPRESS\\HOM-WEST\\MSE2014\\Baseline\\indata\\SADMSE2014_SRPairs_15_09_2014.dat",header=TRUE,sep=","),
                     SR.types = f.RandSR(props=c(0.46,0.32,0.22),nits=iterations),startyear = startyear,years = years)      
 
@@ -1146,7 +1146,7 @@ f.FPRESS.Run<-function(runref="missing",saveref="missing",batch=0,debug=0,runlog
       if (rec==25){
         
         #get the SR model details
-        SR <- f.SADSR(iter,iterations,indata,dfHistSR,SR.types)
+        SR <- f.SADSR(iter,indata,dfHistSR,SR.types)
 
         #save the model details
         SRModels$type[iter]<-SR$model
@@ -1173,7 +1173,7 @@ f.FPRESS.Run<-function(runref="missing",saveref="missing",batch=0,debug=0,runlog
         #draw recruits for 2011 based on 2011 ssb from input file, using appropriate SR model
         #use function recruit25 which implements the SAD SR models without autocorrelation
         #sr model
-        sr <- f.SADSR(iter,iterations,indata,dfHistSR,SR.types)
+        sr <- f.SADSR(iter,indata,dfHistSR,SR.types)
         t <- recruit25(log.file, ssb = indata[iter,'Bsp11'], SRModel = sr, eta = 0, debug = debug,trunc=truncateresid)[1]
         #cat("t=",t,"\n")
 			  #calculate the initial residual for autocorrelation (2011)
@@ -1182,16 +1182,16 @@ f.FPRESS.Run<-function(runref="missing",saveref="missing",batch=0,debug=0,runlog
         #cat("eta.2011=",eta.2011,"\n")
         
         #now calculate eta for 2012
-        eta.2012 <- f.SADSR(iter,iterations,indata,dfHistSR,SR.types)$scor*eta.2011+sqrt(1-f.SADSR(iter,iterations,indata,dfHistSR,SR.types)$scor^2)*rnorm(n=1,mean=0,sd=f.SADSR(iter,iterations,indata,dfHistSR,SR.types)$SigR)
+        eta.2012 <- f.SADSR(iter,indata,dfHistSR,SR.types)$scor*eta.2011+sqrt(1-f.SADSR(iter,indata,dfHistSR,SR.types)$scor^2)*rnorm(n=1,mean=0,sd=f.SADSR(iter,indata,dfHistSR,SR.types)$SigR)
         #Q - should the scor on the end be squared?
         
         #Use the Bev Holt parameters for the first iteration
 			  Rec13 <- recruit26(log.file,ssb = indata[iter,'Bsp13'],
-			                     f.SADSR(iter,iterations,indata,dfHistSR,SR.types),
+			                     f.SADSR(iter,indata,dfHistSR,SR.types),
 			                     eta=eta.2012,
 			                     debug=debug)[1]
 			  Rec12 <- recruit26(log.file,ssb = indata[iter,'Bsp12'],
-			                     f.SADSR(iter,iterations,indata,dfHistSR,SR.types),
+			                     f.SADSR(iter,indata,dfHistSR,SR.types),
 			                     eta=0,
 			                     debug=debug)[1]
 			}
@@ -1199,7 +1199,7 @@ f.FPRESS.Run<-function(runref="missing",saveref="missing",batch=0,debug=0,runlog
 			if (rec==27){
 			  
 			  #get the SR model details
-			  SR <- f.SADSR(iter,iterations,indata,dfHistSR,SR.types)
+			  SR <- f.SADSR(iter,indata,dfHistSR,SR.types)
 			  
 			  #save the model details
 			  SRModels$type[iter]<-SR$model
@@ -1222,7 +1222,7 @@ f.FPRESS.Run<-function(runref="missing",saveref="missing",batch=0,debug=0,runlog
 			if (rec==28){
 			  
 			  #get the SR model details
-			  SR <- f.SADSR(iter,iterations,indata,dfHistSR,SR.types)
+			  SR <- f.SADSR(iter,indata,dfHistSR,SR.types)
 			  
 			  #save the model details
 			  SRModels$type[iter]<-SR$model
@@ -1245,7 +1245,7 @@ f.FPRESS.Run<-function(runref="missing",saveref="missing",batch=0,debug=0,runlog
 			if (rec==29){
 			  
 			  #get the SR model details
-			  SR <- f.SADSR(iter,iterations,indata,dfHistSR,SR.types)
+			  SR <- f.SADSR(iter,indata,dfHistSR,SR.types)
 			  
 			  #save the model details
 			  SRModels$type[iter]<-SR$model
@@ -1269,7 +1269,7 @@ f.FPRESS.Run<-function(runref="missing",saveref="missing",batch=0,debug=0,runlog
 			if (rec==30){
 			  
 			  #get the SR model details
-			  SR <- f.SADSR(iter,iterations,indata,dfHistSR,SR.types)
+			  SR <- f.SADSR(iter,indata,dfHistSR,SR.types)
 			  
 			  #save the model details
 			  SRModels$type[iter]<-SR$model
@@ -1297,7 +1297,7 @@ f.FPRESS.Run<-function(runref="missing",saveref="missing",batch=0,debug=0,runlog
 			  #draw recruits for 2012 based on 2012 ssb from input file, using appropriate SR model
 			  #use function recruit25 which implements the SAD SR models without autocorrelation
 			  #sr model
-			  sr <- f.SADSR(iter,iterations,indata,dfHistSR,SR.types)
+			  sr <- f.SADSR(iter,indata,dfHistSR,SR.types)
         #cat(indata[iter,'Bsp11'],"\n")
         
 			  #t <- recruit25(log.file, ssb = indata[iter,'Bsp11'], SRModel = sr, eta = 0, debug = debug)[1]
@@ -1310,27 +1310,27 @@ f.FPRESS.Run<-function(runref="missing",saveref="missing",batch=0,debug=0,runlog
 			  
 			  ##now calculate eta for 2012
 			  #now calculate eta for 2013
-			  #eta.2012 <- (0.5*f.SADSR(iter,iterations,indata,SR.types)$scor)*eta.2011+
-        #  sqrt(1-(0.5*f.SADSR(iter,iterations,indata,SR.types)$scor)^2)*rnorm(n=1,mean=0)*f.SADSR(iter,iterations,indata,SR.types)$SigR
-			  eta.2013 <- (0.5*f.SADSR(iter,iterations,indata,dfHistSR,SR.types)$scor)*eta.2012+
-			    sqrt(1-(0.5*f.SADSR(iter,iterations,indata,dfHistSR,SR.types)$scor)^2)*rnorm(n=1,mean=0)*f.SADSR(iter,iterations,indata,dfHistSR,SR.types)$SigR
+			  #eta.2012 <- (0.5*f.SADSR(iter,indata,SR.types)$scor)*eta.2011+
+        #  sqrt(1-(0.5*f.SADSR(iter,indata,SR.types)$scor)^2)*rnorm(n=1,mean=0)*f.SADSR(iter,iterations,indata,SR.types)$SigR
+			  eta.2013 <- (0.5*f.SADSR(iter,indata,dfHistSR,SR.types)$scor)*eta.2012+
+			    sqrt(1-(0.5*f.SADSR(iter,indata,dfHistSR,SR.types)$scor)^2)*rnorm(n=1,mean=0)*f.SADSR(iter,indata,dfHistSR,SR.types)$SigR
 			  
 			  #Use the Bev Holt parameters for the first iteration
 			  #Rec13 <- recruit31(log.file,ssb = indata[iter,'Bsp13'],
-			  #                    f.SADSR(iter,iterations,indata,SR.types),
+			  #                    f.SADSR(iter,indata,SR.types),
 			  #                  eta=eta.2012,
 			  #                 debug=debug)[1]
 			  Rec14 <- recruit31(log.file,ssb = indata[iter,'Bsp14'],
-			                     f.SADSR(iter,iterations,indata,dfHistSR,SR.types),
+			                     f.SADSR(iter,indata,dfHistSR,SR.types),
 			                     eta=eta.2013,
 			                     debug=debug)[1]
 			  
 # 			  Rec12 <- recruit31(log.file,ssb = indata[iter,'Bsp12'],
-# 			                     f.SADSR(iter,iterations,indata,SR.types),
+# 			                     f.SADSR(iter,indata,SR.types),
 # 			                     eta=0,
 # 			                     debug=debug)[1]
 			  Rec13 <- recruit31(log.file,ssb = indata[iter,'Bsp13'],
-			                     f.SADSR(iter,iterations,indata,dfHistSR,SR.types),
+			                     f.SADSR(iter,indata,dfHistSR,SR.types),
 			                     eta=0,
 			                     debug=debug)[1]
 			          
@@ -1345,7 +1345,7 @@ f.FPRESS.Run<-function(runref="missing",saveref="missing",batch=0,debug=0,runlog
 			  #draw recruits for 2012 based on 2012 ssb from input file, using appropriate SR model
 			  #use function recruit25 which implements the SAD SR models without autocorrelation
 			  #sr model
-			  #sr <- f.SADSR(iter,iterations,indata,dfHistSR,SR.types)
+			  #sr <- f.SADSR(iter,indata,dfHistSR,SR.types)
 			  
 			  #t <- recruit25(log.file, ssb = indata[iter,'Bsp11'], SRModel = sr, eta = 0, debug = debug)[1]
 			  #t <- recruit25(log.file, ssb = indata[iter,'Bsp12'], SRModel = sr, eta = 0, debug = debug,trunc=truncateresid)[1]
@@ -1366,31 +1366,31 @@ f.FPRESS.Run<-function(runref="missing",saveref="missing",batch=0,debug=0,runlog
         
 			  ##now calculate eta for 2012
 			  #now calculate eta for 2013
-			  #eta.2012 <- (1.0*f.SADSR(iter,iterations,indata,SR.types)$scor)*eta.2011+
-			  # sqrt(1-(1.0*f.SADSR(iter,iterations,indata,SR.types)$scor)^2)*rnorm(n=1,mean=0)*f.SADSR(iter,iterations,indata,SR.types)$SigR
-			  #eta.2013 <- (1.0*f.SADSR(iter,iterations,indata,dfHistSR,SR.types)$scor)*eta.2012+
-			  # sqrt(1-(1.0*f.SADSR(iter,iterations,indata,dfHistSR,SR.types)$scor)^2)*rnorm(n=1,mean=0)*f.SADSR(iter,iterations,indata,dfHistSR,SR.types)$SigR
+			  #eta.2012 <- (1.0*f.SADSR(iter,indata,SR.types)$scor)*eta.2011+
+			  # sqrt(1-(1.0*f.SADSR(iter,indata,SR.types)$scor)^2)*rnorm(n=1,mean=0)*f.SADSR(iter,iterations,indata,SR.types)$SigR
+			  #eta.2013 <- (1.0*f.SADSR(iter,indata,dfHistSR,SR.types)$scor)*eta.2012+
+			  # sqrt(1-(1.0*f.SADSR(iter,indata,dfHistSR,SR.types)$scor)^2)*rnorm(n=1,mean=0)*f.SADSR(iter,indata,dfHistSR,SR.types)$SigR
         eta <- lSR[[iter]]$scor*eta + sqrt(1-lSR[[iter]]$scor^2)*rnorm(n=1,mean=0)*lSR[[iter]]$SigR
 			  #cat("eta=",eta,"\n")
 			  
         
 			  #Use the Bev Holt parameters for the first iteration
 # 			  Rec13 <- recruit32(log.file,ssb = indata[iter,'Bsp13'],
-# 			                     f.SADSR(iter,iterations,indata,SR.types),
+# 			                     f.SADSR(iter,indata,SR.types),
 # 			                     eta=eta.2012,
 # 			                     debug=debug)[1]
 # 			  Rec14 <- recruit32(log.file,ssb = indata[iter,'Bsp14'],
-# 			                     f.SADSR(iter,iterations,indata,dfHistSR,SR.types),
+# 			                     f.SADSR(iter,indata,dfHistSR,SR.types),
 # 			                     eta=eta.2013,
 # 			                     debug=debug,trunc=truncateresid)[1]
 
 # 			  Rec12 <- recruit32(log.file,ssb = indata[iter,'Bsp12'],
-# 			                     f.SADSR(iter,iterations,indata,SR.types),
+# 			                     f.SADSR(iter,indata,SR.types),
 # 			                     eta=0,
 # 			                     debug=debug)[1]
 		
 #         Rec13 <- recruit32(log.file,ssb = indata[iter,'Bsp13'],
-#                            f.SADSR(iter,iterations,indata,dfHistSR,SR.types),
+#                            f.SADSR(iter,indata,dfHistSR,SR.types),
 #                            eta=0,
 #                            debug=debug,trunc=truncateresid)[1]
 
@@ -1421,7 +1421,7 @@ f.FPRESS.Run<-function(runref="missing",saveref="missing",batch=0,debug=0,runlog
         #SRSAD5, historic residuals, no autocorrelation
         
         #get the SR model details
-        SR <- f.SADSR(iter,iterations,indata,dfHistSR,SR.types)
+        SR <- f.SADSR(iter,indata,dfHistSR,SR.types)
   
         #save the model details
         SRModels$type[iter]<-SR$model
@@ -1442,7 +1442,7 @@ f.FPRESS.Run<-function(runref="missing",saveref="missing",batch=0,debug=0,runlog
         #SRSAD5, historic residuals, including autocorrelation
 
         #get Stock Recruit model details
-        #SR <- f.SADSR(iter,iterations,indata,dfHistSR,SR.types)
+        #SR <- f.SADSR(iter,indata,dfHistSR,SR.types)
         
         #initial residual for autocorrelation (2012)
         #eta.2012 <- log(indata[iter,'Rec12'])-log(recruit25(log.file, ssb = indata[iter,'Bsp12'], SRModel = SR, eta = 0, debug = debug,trunc=truncateresid)[1])
@@ -1739,15 +1739,15 @@ f.FPRESS.Run<-function(runref="missing",saveref="missing",batch=0,debug=0,runlog
                           recruit22(ssb=ssb.J1.true,model=as.character(dfSR$mod[iter]),A.param=dfSR$A[iter],B.param=dfSR$B[iter],sigma=dfSR$sigma[iter],debug=debug),
                           recruit23(log.file,ssb=ssb.J1.true,model=as.character(dfSR$mod[iter]),A.param=dfSR$A[iter],B.param=dfSR$B[iter],sigma=dfSR$sigma[iter],debug=debug),
                           recruit24(ssb=ssb.J1.true,model=as.character(dfSR$mod[iter]),A.param=dfSR$A[iter],B.param=dfSR$B[iter],sigma=dfSR$sigma[iter],auto=dfSR$ac_in2001[iter],eta=eta,debug=debug),
-                          recruit25(log.file,ssb=ssb.J1.true,f.SADSR(iter,iterations,indata,dfHistSR,SR.types,trunc=truncateresid),eta=eta,debug=debug),
-                          recruit26(log.file,ssb=ssb.J1.true,f.SADSR(iter,iterations,indata,dfHistSR,SR.types),eta=eta,debug=debug),
-                          recruit27(log.file,ssb=ssb.J1.true,f.SADSR(iter,iterations,indata,dfHistSR,SR.types),eta=eta,debug=debug),
-                          recruit28(log.file,ssb=ssb.J1.true,f.SADSR(iter,iterations,indata,dfHistSR,SR.types),eta=eta,debug=debug),                         
-                          recruit29(log.file,ssb=ssb.J1.true,f.SADSR(iter,iterations,indata,dfHistSR,SR.types),eta=eta,debug=debug),                          
-                          recruit30(log.file,ssb=ssb.J1.true,f.SADSR(iter,iterations,indata,dfHistSR,SR.types),eta=eta,debug=debug),
-                          recruit31(log.file,ssb=ssb.J1.true,f.SADSR(iter,iterations,indata,dfHistSR,SR.types),eta=eta,debug=debug),
+                          recruit25(log.file,ssb=ssb.J1.true,f.SADSR(iter,indata,dfHistSR,SR.types,trunc=truncateresid),eta=eta,debug=debug),
+                          recruit26(log.file,ssb=ssb.J1.true,f.SADSR(iter,indata,dfHistSR,SR.types),eta=eta,debug=debug),
+                          recruit27(log.file,ssb=ssb.J1.true,f.SADSR(iter,indata,dfHistSR,SR.types),eta=eta,debug=debug),
+                          recruit28(log.file,ssb=ssb.J1.true,f.SADSR(iter,indata,dfHistSR,SR.types),eta=eta,debug=debug),                         
+                          recruit29(log.file,ssb=ssb.J1.true,f.SADSR(iter,indata,dfHistSR,SR.types),eta=eta,debug=debug),                          
+                          recruit30(log.file,ssb=ssb.J1.true,f.SADSR(iter,indata,dfHistSR,SR.types),eta=eta,debug=debug),
+                          recruit31(log.file,ssb=ssb.J1.true,f.SADSR(iter,indata,dfHistSR,SR.types),eta=eta,debug=debug),
                           recruit32(log.file,ssb=ssb.J1.true,lSR[[iter]],eta=eta,debug=debug,trunc=truncateresid),
-                          recruit33(log.file,ssb=ssb.J1.true,f.SADSR(iter,iterations,indata,dfHistSR,SR.types),eta=eta,debug=debug),
+                          recruit33(log.file,ssb=ssb.J1.true,f.SADSR(iter,indata,dfHistSR,SR.types),eta=eta,debug=debug),
                           f.recruit34(log.file=log.file, ssb=ssb.J1.true, SRModel=lSR[[iter]], year=simyear, debug=debug)
         )
 								
@@ -1798,7 +1798,7 @@ f.FPRESS.Run<-function(runref="missing",saveref="missing",batch=0,debug=0,runlog
 #               nospike.bloss <- c(nospike.bloss,lSR[[iter]]$Bloss)
 #               nospike.rec <- c(nospike.rec,rec_ret[1])
 #               nospike.model <- c(nospike.model,lSR[[iter]]$model)
-#               write(c(NA,sum(ssb.J1.true),f.SADSR(iter,iterations,indata,SR.types)$Bloss,rec_ret[1]),
+#               write(c(NA,sum(ssb.J1.true),f.SADSR(iter,indata,SR.types)$Bloss,rec_ret[1]),
 #                     file = paste(FPRESS.Home(),"\\outdata\\NoSpikes_",runref,".dat",sep=""),
 #                     append=TRUE)      
 #            }

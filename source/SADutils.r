@@ -103,12 +103,11 @@ f.SADEgg <- function(iter,nits,SADparams,EggHist,StockWeights,NatMor,Mat,
   
 }
 
-f.SADSR <- function(iter,nits,SADparams,SRpairs,SR.types,startyear,years){
+f.SADSR <- function(iter,SADparams,SRpairs,SR.types,startyear,years){
     
   #function returns SR details in a list
   
   #iter is the current iteration number
-  #nits is the total number of iterations
   #SADparams is the df containing the SAD input vectors    
   #SRpairs is the df containing the historic SAD stock and recruit pairs
   #SR.types is a character vector specifying which model to use in each iteration,
@@ -122,7 +121,6 @@ f.SADSR <- function(iter,nits,SADparams,SRpairs,SR.types,startyear,years){
   #vectors for historic and future residuals
   Resids <- vector("numeric",length=length(datYrs)+years+1)
   names(Resids) <- seq(1982,length=length(Resids))
-  
 
   #Beverton & Holt
   if (SR.types[iter] == 'BH') {
@@ -143,14 +141,13 @@ f.SADSR <- function(iter,nits,SADparams,SRpairs,SR.types,startyear,years){
       last.resid <- Resids[y]
     }
     
-    names(Resids) <- seq(1982,length=length(Resids))
-    
     FLSRmodel <- 'bevholt'
     AParam <- SADparams$abh[iter]
     BParam <- SADparams$bbh[iter]
     GParam <- NA
     SigR <- SADparams$sigRbh[iter]
     scor <- SADparams$scorbh[iter]
+    
     
   } else if (SR.types[iter] == 'RK'){
     
@@ -169,8 +166,6 @@ f.SADSR <- function(iter,nits,SADparams,SRpairs,SR.types,startyear,years){
       Resids[y] <- SADparams$scorrk[iter]*last.resid + sqrt(1-SADparams$scorrk[iter]^2)*ResidDraws[y-length(datYrs)]
       last.resid <- Resids[y]
     }
-    
-    names(Resids) <- seq(1982,length=length(Resids))
 
     FLSRmodel <- 'ricker'
     AParam <- SADparams$ark[iter]
@@ -199,8 +194,6 @@ f.SADSR <- function(iter,nits,SADparams,SRpairs,SR.types,startyear,years){
       last.resid <- Resids[y]
     }
     
-    names(Resids) <- seq(1982,length=length(Resids))
-    
     FLSRmodel <- 'segreg'
     AParam <- SADparams$ahs[iter]
     BParam <- SADparams$bhs[iter]
@@ -217,12 +210,18 @@ f.SADSR <- function(iter,nits,SADparams,SRpairs,SR.types,startyear,years){
   #historic SSB
   HistSSB <- SRpairs[iter,paste("Bsp_",c(as.character(seq(1982,startyear))),sep="")]
   names(HistSSB) <- as.character(seq(1982,startyear))
+  
+  #serial correlation of generated residuals
+  scor2 <- acf(Resids[(length(datYrs)+1):length(Resids)],plot=FALSE)[[1]][2]
+  #sd of generated residuals
+  SigR2 <- sd(Resids[(length(datYrs)+1):length(Resids)])
 
   
   list(model = SR.types[iter], FLSRmodel = FLSRmodel, AParam = AParam, BParam = BParam, 
        GParam = GParam, SigR = SigR, scor = scor, Rec1982 = SADparams$Rec1982[iter], 
        Rec2001 = SADparams$Rec2001[iter], SSB1982 = SADparams$SSB1982[iter], 
        SSB2001 = SADparams$SSB2001[iter], Bloss = SADparams$Bloss[iter], Resids = Resids, 
-       HistSSB = HistSSB, HistRec = HistRec)
+       HistSSB = HistSSB, HistRec = HistRec, scor2 = scor2, scratio = scor/scor2,
+       SigR2 = SigR2, Sigratio = SigR/SigR2)
   
 }

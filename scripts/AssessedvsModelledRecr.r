@@ -21,7 +21,7 @@ indata <- read.table(".\\indata\\SADMSE2014_WHMParams_15_09_2014.dat",header=TRU
 dfHistSR <- read.table(".\\indata\\SADMSE2014_SRPairs_15_09_2014.dat",header=TRUE,sep=",")
 SR.types<-f.RandSR(nits=nits)
 
-lSR<-lapply(iters,FUN=f.SADSR,nits=nits,SADparams=indata,SRpairs=dfHistSR,SR.types=SR.types,startyear=startyear,years=years)
+lSR<-lapply(iters,FUN=f.SADSR,SADparams=indata,SRpairs=dfHistSR,SR.types=SR.types,startyear=startyear,years=years)
 
 
 #temp vectors for results of recruitment draws based on historic ssb values (50 years, 33 historic vals)
@@ -84,7 +84,7 @@ years <- 100  #generate 100 years of future residuals
 startyear <- 2014
 indata <- read.table(".\\indata\\SADMSE2014_WHMParams_15_09_2014.dat",header=TRUE,sep=",")
 SR.types<-f.RandSR(nits=nits)
-lSR<-lapply(seq(1:nits),FUN=f.SADSR,nits=nits,SADparams=indata,SRpairs=SRpairs,SR.types=SR.types,startyear=startyear,years=years)
+lSR<-lapply(seq(1:nits),FUN=f.SADSR,SADparams=indata,SRpairs=SRpairs,SR.types=SR.types,startyear=startyear,years=years)
 
 #initialize some vectors
 rec.obs<-c()
