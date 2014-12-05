@@ -9,10 +9,10 @@ f.RandSR <- function(props=c(0.46,0.32,0.22),nits){
   
   SR.types <- vector("character",nits)
   
-  SR.types[1:nits] <- "HS"
+  SR.types[1:nits] <- "RK"
   SR.types[1:round((props[1]*nits))] <- "BH"
-  SR.types[(round((props[1]*nits)) + 1):(round((props[1]*nits)) + 1 + round((props[2]*nits)))] <- "RK"
-    
+  SR.types[((nits-round((props[3]*nits)))+1):nits] <- "HS"
+  
   SR.types
 }
 
@@ -35,6 +35,7 @@ f.SADEgg <- function(iter,nits,SADparams,EggHist,StockWeights,NatMor,Mat,
   #PM - proportion natural mortality priot to spawning, defaults to 0.45
   #startyear is the first year of the simulation
   #years number of years of simulation
+
 
   #data years correspond to the years in the EggHist data frame
   datYrs<-EggHist$Year
@@ -60,12 +61,8 @@ f.SADEgg <- function(iter,nits,SADparams,EggHist,StockWeights,NatMor,Mat,
     #Num at age
     Num <- unlist(NumatAge[iter,paste('y',datYrs[d],'a',seq(0,11),sep="")])
     
-    #cat("Num=",Num,"\n")
-    
     #Maturity
     maturity <- unlist(Mat[Mat$Year==datYrs[d],2:13])
-    
-    #cat("maturity=",maturity,"\n")
     
     #Fishing Mortality
     f <- unlist(FatAge[iter,paste('y',datYrs[d],'a',seq(0,11),sep="")])
@@ -91,8 +88,6 @@ f.SADEgg <- function(iter,nits,SADparams,EggHist,StockWeights,NatMor,Mat,
   
   names(ResidFut) <- futYrs
   
-  #cat("ResidHist",ResidHist,"\n")
-  
   ret <- list(aFec = SADparams$aFec[iter],
               bFec = SADparams$bFec[iter],
               qFec = SADparams$qFec[iter],
@@ -103,7 +98,7 @@ f.SADEgg <- function(iter,nits,SADparams,EggHist,StockWeights,NatMor,Mat,
   
 }
 
-f.SADSR <- function(iter,SADparams,SRpairs,SR.types,startyear,years){
+f.SADSR <- function(iter,SADparams,SRpairs,SR.types,startyear,years,det=FALSE){
     
   #function returns SR details in a list
   
@@ -114,6 +109,7 @@ f.SADSR <- function(iter,SADparams,SRpairs,SR.types,startyear,years){
   #usually supplied by function fRandSR
   #startyear is the first year of the simulation
   #years number of years of simulation
+  #det - deterministic run? If so, the future residuals are set to zero
   
   #data years
   datYrs<-c(as.character(seq(1982,startyear-2)))
@@ -137,7 +133,7 @@ f.SADSR <- function(iter,SADparams,SRpairs,SR.types,startyear,years){
     last.resid <- Resids[length(datYrs)]
     
     for (y in ((length(datYrs)+1):length(Resids))){
-      Resids[y] <- SADparams$scorbh[iter]*last.resid + sqrt(1-SADparams$scorbh[iter]^2)*ResidDraws[y-length(datYrs)]
+      if (!det) {Resids[y] <- SADparams$scorbh[iter]*last.resid + sqrt(1-SADparams$scorbh[iter]^2)*ResidDraws[y-length(datYrs)]}
       last.resid <- Resids[y]
     }
     
@@ -163,7 +159,7 @@ f.SADSR <- function(iter,SADparams,SRpairs,SR.types,startyear,years){
     last.resid <- Resids[length(datYrs)]
 
     for (y in ((length(datYrs)+1):length(Resids))){
-      Resids[y] <- SADparams$scorrk[iter]*last.resid + sqrt(1-SADparams$scorrk[iter]^2)*ResidDraws[y-length(datYrs)]
+      if (!det) {Resids[y] <- SADparams$scorrk[iter]*last.resid + sqrt(1-SADparams$scorrk[iter]^2)*ResidDraws[y-length(datYrs)]}
       last.resid <- Resids[y]
     }
 
@@ -190,7 +186,7 @@ f.SADSR <- function(iter,SADparams,SRpairs,SR.types,startyear,years){
     last.resid <- Resids[length(datYrs)]
 
     for (y in ((length(datYrs)+1):length(Resids))){
-      Resids[y] <- SADparams$scorhs[iter]*last.resid + sqrt(1-SADparams$scorhs[iter]^2)*ResidDraws[y-length(datYrs)]
+      if (!det) {Resids[y] <- SADparams$scorhs[iter]*last.resid + sqrt(1-SADparams$scorhs[iter]^2)*ResidDraws[y-length(datYrs)]}
       last.resid <- Resids[y]
     }
     
