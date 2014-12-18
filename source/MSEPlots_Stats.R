@@ -17,7 +17,7 @@
 # }
 
 
-f.MSE2014ssbplot<-function(ref,box.whisker = 1,conf.int = 0,yminval = "missing",
+fMSE2014ssbplot<-function(ref,box.whisker = 1,conf.int = 0,yminval = "missing",
                          ymaxval = "missing",J1 = TRUE,Bref = "missing",
                          file = "missing",ext = "missing",debug = 0){
   
@@ -33,7 +33,7 @@ f.MSE2014ssbplot<-function(ref,box.whisker = 1,conf.int = 0,yminval = "missing",
   def.par <- par(no.readonly=TRUE)
   
   #read the log file
-  log <- read.log(ref)
+  log <- fread_log(ref)
   
   #read the output file
   if (file.exists(log$outfile)){
@@ -146,7 +146,7 @@ f.MSE2014ssbplot<-function(ref,box.whisker = 1,conf.int = 0,yminval = "missing",
   
 }
 
-f.MSE2014yieldplot<-function(ref,box.whisker=1,conf.int=0,
+fMSE2014yieldplot<-function(ref,box.whisker=1,conf.int=0,
                            yminval="missing",ymaxval="missing",
                            file="missing",ext="missing"){
   
@@ -154,7 +154,7 @@ f.MSE2014yieldplot<-function(ref,box.whisker=1,conf.int=0,
   def.par <- par(no.readonly=TRUE)
   
   #read the log file
-  log <- read.log(ref)
+  log <- fread_log(ref)
   
   #read the output file
   if (file.exists(log$outfile)){
@@ -259,7 +259,7 @@ f.MSE2014yieldplot<-function(ref,box.whisker=1,conf.int=0,
   
 }
 
-f.MSE2014fbarplot<-function(ref,box.whisker=1,conf.int=0,
+fMSE2014fbarplot<-function(ref,box.whisker=1,conf.int=0,
                           yminval="missing",ymaxval="missing",
                           file="missing",ext="missing"){
   
@@ -267,7 +267,7 @@ f.MSE2014fbarplot<-function(ref,box.whisker=1,conf.int=0,
   def.par <- par(no.readonly=TRUE)
   
   #read the log file
-  log <- read.log(ref)
+  log <- fread_log(ref)
   
   #read the output file
   if (file.exists(log$outfile)){
@@ -277,18 +277,18 @@ f.MSE2014fbarplot<-function(ref,box.whisker=1,conf.int=0,
   }
   
   #check object FBar was saved by this simulation
-  if (!exists("op.FBar")){stop(paste("No FBar object for simulation",ref,sep=" "))}
+  if (!exists("op.fbar")){stop(paste("No FBar object for simulation",ref,sep=" "))}
   
   #calculate stats
   #median
-  med.fbar <- apply(X=op.FBar,MARGIN=c("year"),FUN=median)
+  med.fbar <- apply(X=op.fbar,MARGIN=c("year"),FUN=median)
   #mean
-  mean.fbar <- apply(X=op.FBar,MARGIN=c("year"),FUN=mean)
+  mean.fbar <- apply(X=op.fbar,MARGIN=c("year"),FUN=mean)
   #SD
-  SD.fbar <- sqrt(apply(X=op.FBar,MARGIN=c("year"),FUN="var"))
+  SD.fbar <- sqrt(apply(X=op.fbar,MARGIN=c("year"),FUN="var"))
   
   #percentiles
-  pct.fbar <- apply(X=op.FBar,MARGIN=c("year"),FUN=quantile,probs=seq(0.05,0.95,by=0.05))
+  pct.fbar <- apply(X=op.fbar,MARGIN=c("year"),FUN=quantile,probs=seq(0.05,0.95,by=0.05))
   
 
   if (!missing(file)) {
@@ -338,7 +338,7 @@ f.MSE2014fbarplot<-function(ref,box.whisker=1,conf.int=0,
   #box/whisker
   if(box.whisker==1){
     for(i in 1:(length(yr))){
-      boxplot(op.FBar[,i,,,,],range=0.1,add=TRUE,at=yr[i],axes=FALSE,pch=".")
+      boxplot(op.fbar[,i,,,,],range=0.1,add=TRUE,at=yr[i],axes=FALSE,pch=".")
     }
   }
   
@@ -368,12 +368,12 @@ f.MSE2014fbarplot<-function(ref,box.whisker=1,conf.int=0,
   
 }
 
-f.MSE2014TACplot<-function(ref,box.whisker=1,conf.int=0,
+fMSE2014TACplot<-function(ref,box.whisker=1,conf.int=0,
                          yminval="missing",ymaxval="missing",
                          file="missing",ext="missing"){
   
   #read the log file
-  log <- read.log(ref)
+  log <- fread_log(ref)
   
   #read the output file
   if (file.exists(log$outfile)){
@@ -477,13 +477,13 @@ f.MSE2014TACplot<-function(ref,box.whisker=1,conf.int=0,
 }
 
 
-f.MSE2014riskplot<-function(ref,yminval="missing",ymaxval="missing",file="missing",ext="missing"){
+fMSE2014riskplot<-function(ref,yminval="missing",ymaxval="missing",file="missing",ext="missing"){
   
   #save graphics settings
   def.par <- par(no.readonly=TRUE)
   
   #read the log file
-  log <- read.log(ref)
+  log <- fread_log(ref)
   
   #read the stat file
   stats.file <- paste(".\\stats\\",ref,".dat",sep="")
@@ -532,13 +532,13 @@ f.MSE2014riskplot<-function(ref,yminval="missing",ymaxval="missing",file="missin
   axis(2)
   
   #annual risks
-  lines(dat$From[dat$From==dat$To],dat$Rsk3[dat$From==dat$To])
+  lines(dat$From[dat$From==dat$To],dat$Rsk3_ST[dat$From==dat$To])
   
   #multiannual risks
   if (length(dat$From[!dat$From==dat$To])>0) {
     for (l in seq(1,length(dat$From[!dat$From==dat$To]))){
       lines(seq(dat$From[!dat$From==dat$To][l],dat$To[!dat$From==dat$To][l]),
-            rep(dat$Rsk3[!dat$From==dat$To][l],length=length(seq(dat$From[!dat$From==dat$To][l],dat$To[!dat$From==dat$To][l]))))
+            rep(dat$Rsk3_ST[!dat$From==dat$To][l],length=length(seq(dat$From[!dat$From==dat$To][l],dat$To[!dat$From==dat$To][l]))))
     }
   }
   
@@ -796,7 +796,11 @@ f.FLRCompPlot <- function(ref,fname,f=c(0,0.05,0.1),fcol=c("black","red","blue")
 }
 
 
-f.MSE2014Stats <- function(ref,fname,period,ssbref=1.24e6){
+fCalc_MSE2014_stats <- function(ref,fname,period,nits=NULL,ssbref=1.24e6){
+  
+  #nits - iterations on which to base calculation. If NULL then use all
+  #if this number is less than the number of simulation iterations
+  #then this number are randomly selected (replace=FALSE)
   
   #calculate MSE2014 statistics over the statistical period, save in nominated file
   #the following stats are calculated
@@ -819,17 +823,25 @@ f.MSE2014Stats <- function(ref,fname,period,ssbref=1.24e6){
   #write header
   if (!file.exists(fname)) {
   write(file=fname,
-        c("From","To","FBar","SSB0.1","SSB0.5","SSB0.9","Mean SSB","Rsk1","Rsk2","Rsk3","Yld0.1","Yld0.5","Yld0.9","Mean Yld","Rec0.1","Rec0.5","Rec0.9","Rec","Y/R"),
-        ncolumns=19,
+        c("From","To","Blim","FTAC",
+          "SSBJ1_0.1","SSBJ1_0.5","SSBJ1_0.9","Mean SSBJ1","Rsk1_J1","Rsk2_J1","Rsk3_J1",
+          "SSBST_0.1","SSBST_0.5","SSBST_0.9","Mean SSBST","Rsk1_ST","Rsk2_ST","Rsk3_ST",
+          "Yld0.1","Yld0.5","Yld0.9","Mean Yld","Rec0.1","Rec0.5","Rec0.9","Rec","Y/R",
+          "TACinc","TACdec","NoChg","AvgInc","AvgDec"),
+        ncolumns=32,
         sep="\t")
   }
 
   #read log.file to determine the varmin,varmax and resolution settings
-  log.dat <- read.log(ref)
-  niter <- log.dat$iterations
+  log.dat <- fread_log(ref)
+  niter <- log.dat$nits
   nyear <- length(seq(period[1],period[2]))
   
   opfiles <- paste(log.dat$outdata.path,"FLRObjects_",ref,"_",seq(1,log.dat$resolution+1,by=1),".dat",sep="")
+  
+  if (is.null(nits)) {sel_nits <- seq(1:niter)} else {sel_nits <- nits}
+  
+  cat(period[1],period[2],"\n")
   
   for (f in opfiles){
     
@@ -837,39 +849,130 @@ f.MSE2014Stats <- function(ref,fname,period,ssbref=1.24e6){
     
     load(f)
     
-    SSB<-as.vector(apply(quantSums(op.SSB.J1.true[,as.character(seq(period[1],period[2])),,,,]),c("iter"),FUN="mean")/1e6)
-    qSSB<-quantile(SSB,prob=c(0,0.1,0.5,0.9,1.0))
-    Yld<-as.vector(apply(quantSums(op.CatchWeight[,as.character(seq(period[1],period[2])),,,,]),c("iter"),FUN="mean")/1e3)
+    #select appropriate time slice
+    #op.SSB.J1.true <- window(op.SSB.J1.true,start=period[1],end=period[2])
+    op.SSB.ST.true <- window(op.SSB.ST.true,start=period[1],end=period[2])
+    op.CatchWeight <- window(op.CatchWeight,start=period[1],end=period[2])
+    op.Recruits <- window(op.Recruits,start=period[1],end=period[2])
+    op.FTac <- window(op.FTac,start=period[1],period[2])
+    op.fbar <- window(op.fbar,start=period[1],period[2])
+    
+    #window objects
+    lop <- lapply(list("SSB_J1_true" = op.SSB.J1.true, "SSB_ST_true" = op.SSB.ST.true, "CW" = op.CatchWeight,
+                       "Rec" = op.Recruits, "FTAC" = op.FTac, "FBar" = op.fbar), window, start = period[1], end = period[2])
+    
+    #select iterations (if a subset of to be used as a basis for statistical calculations)
+    if (!is.null(nits)){
+      lop <- lapply(lop,iter,nits)
+    }
+
+    #and the appropriate iterations if a subset are identified in the function call
+    if (!is.null(nits)) {
+     #op.SSB.J1.true <- iter(op.SSB.J1.true,nits)
+     op.SSB.ST.true <- iter(op.SSB.ST.true,nits)
+     op.CatchWeight <- iter(op.CatchWeight,nits)
+     op.Recruits <- iter(op.Recruits,nits)
+     op.FTac <- iter(op.FTac,nits)
+    }
+    
+    SSBJ1 <- as.vector(apply(quantSums(lop$SSB_J1_true),c("iter"),FUN="mean")/1e6)
+    SSBST <- as.vector(apply(quantSums(op.SSB.ST.true),c("iter"),FUN="mean")/1e6)
+    Yld <- as.vector(apply(quantSums(op.CatchWeight),c("iter"),FUN="mean")/1e3)
+    
+    qSSBJ1<-quantile(SSBJ1,prob=c(0,0.1,0.5,0.9,1.0))
+    qSSBST<-quantile(SSBST,prob=c(0,0.1,0.5,0.9,1.0))    
     qYld<-quantile(Yld,probs=c(0,0.1,0.5,0.9,1.0))
     
     #risk calculations
-    Rsk1<-100*(sum(SSB<ssbref/1e6)/(nyear*niter))
-    Rsk2<-100*sum(apply(quantSums(op.SSB.J1.true[,as.character(seq(period[1],period[2])),,,,])<ssbref,5,sum)>0)/niter
-    Rsk3<-max(100*apply(quantSums(op.SSB.J1.true[,as.character(seq(period[1],period[2])),,,,])<ssbref,2,sum)/niter)
+    Rsk1J1<-100*mean(apply(quantSums(lop$SSB_J1_true)<ssbref,c("year"),FUN="sum")/dim(op.SSB.J1.true)[6])
+    Rsk1ST<-100*mean(apply(quantSums(op.SSB.ST.true)<ssbref,c("year"),FUN="sum")/dim(op.SSB.J1.true)[6])
+    
+    Rsk2J1<-100*sum(apply(quantSums(lop$SSB_J1_true),c("iter"),FUN="min")<ssbref)/dim(op.SSB.J1.true)[6]
+    Rsk2ST<-100*sum(apply(quantSums(op.SSB.ST.true),c("iter"),FUN="min")<ssbref)/dim(op.SSB.J1.true)[6]
+    
+    Rsk3J1<-max(100*apply(quantSums(lop$SSB_J1_true)<ssbref,2,sum)/dim(op.SSB.J1.true)[6])
+    Rsk3ST<-max(100*apply(quantSums(op.SSB.ST.true)<ssbref,2,sum)/dim(op.SSB.J1.true)[6])
     
     #mean recruitment by iterations
-    mnRec <- apply(op.Recruits[,as.character(seq(period[1],period[2])),,,],c("iter"),FUN="mean")
+    mnRec <- apply(op.Recruits,c("iter"),FUN="mean")
     qmnRec <- quantile(mnRec,probs=c(0,0.1,0.5,0.9,1.0))
     
+    #number of TAC increases/decreases and the average change
+    #this doesn't apply to reporting periods of only 1 year (period[1]==period[2])
+    if (period[2]>period[1]){
+      TACchg <- apply(lop$FTAC,c("iter"),diff)
+      #increases
+      inc <- mean(colSums(TACchg>0))
+      #decreases
+      dec <- mean(colSums(TACchg<0))
+      #no change
+      nochg <- mean(colSums(TACchg==0))
+      #average increase
+      TACchg[TACchg<=0] <- NA
+      avginc <- mean(colMeans(TACchg,na.rm=TRUE),na.rm=TRUE)
+      #average decrease
+      TACchg <- apply(lop$FTAC,c("iter"),diff)
+      TACchg[TACchg>=0] <- NA
+      avgdec <- mean(colMeans(TACchg,na.rm=TRUE),na.rm=TRUE)
+    } else {
+      inc <- dec <- nochg <- avginc <- avgdec <- NA
+    }
+    
     write(file=fname,
-          c(period[1],period[2],
-            mean(op.FBar[,as.character(seq(period[1],period[2])),,,]),
-            qSSB[2],qSSB[3],qSSB[4],mean(SSB),
-            Rsk1,Rsk2,Rsk3,
+          c(period[1],period[2],ssbref/1e6,
+            mean(op.FTac),
+            qSSBJ1[2],qSSBJ1[3],qSSBJ1[4],mean(SSBJ1),
+            Rsk1J1,Rsk2J1,Rsk3J1,
+            qSSBST[2],qSSBST[3],qSSBST[4],mean(SSBST),
+            Rsk1ST,Rsk2ST,Rsk3ST,
             qYld[2],qYld[3],qYld[4],
             mean(Yld),
             qmnRec[2]/1000,qmnRec[3]/1000,qmnRec[4]/1000,
             mean(mnRec)/1000,
-            mean(Yld)/(mean(op.Recruits[,as.character(seq(period[1],period[2]))])/1000)),
-          ncolumns=19,
-          sep="\t",append=TRUE)
-    
-    
+            mean(Yld)/(mean(op.Recruits)/1000),
+            inc,dec,nochg,avginc,avgdec),
+          ncolumns=32,
+          sep="\t",append=TRUE) 
   }
-  
   
 }
 
 
+fgen_Latex <- function(opt_file) {
 
+  require(xtable)
+  require(dplyr)
+  
+  infile <- paste0(".\\stats\\",opt_file,".dat")
+  outfile <- paste0(".\\tables\\",opt_file,"_stats.tex")
+  
+  df <- read.table(infile,header=TRUE,sep="\t")
+  
+  #exclude annual stats
+  df <- select(filter(df,!(From==To)))
+
+  #TAC variability as percentages, increases/decreases in kt
+  df <- mutate(df,TACup = as.integer(round(100*(TACinc/(To-From)))))
+  df <- mutate(df,TACdn = as.integer(round(100*(TACdec/(To-From)))))
+  df <- mutate(df,Avgup = round(AvgInc/1000))
+  df <- mutate(df,Avgdn = round(AvgDec/1000))
+  
+  df <- mutate(df,SSB = round(SSBST_0.5,2))
+  df <- mutate(df,Yld = round(Yld0.5,2))
+  df <- mutate(df,Risk = round(Rsk3_ST))
+  
+  #convert cols to characters (to append non numerics)
+  df[] <- lapply(df,as.character)
+  
+  df <- mutate(df,TACu = paste0(TACup,"%"))
+  df <- mutate(df,TACd = paste0(TACdn,"%"))
+  df <- mutate(df,Rsk = paste0(Risk,"%"))
+  
+  df <- select(df,From,To,SSB,Yld,Rsk,TACu,Avgup,TACd,Avgdn)
+  
+  t <- xtable(df)
+  
+  print(t, type = "latex", file = outfile, include.rownames=FALSE)
+  
+}
 

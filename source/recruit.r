@@ -6,7 +6,7 @@
 #Sys.setenv("V:recruit.r"="2.0")
 
 #assign the environment var V:recruit.r
-set.env.var("V:recruit.r","2.0")
+#set.env.var("V:recruit.r","2.0")
 
 #Recruitment functions
 
@@ -828,7 +828,7 @@ set.env.var("V:recruit.r","2.0")
 
 #SAD recruit models
 #recruit25 <- function(f,ssb,SRModel,eta,debug=0,trunc=FALSE,trunc.upper=2,trunc.lower=-Inf){
-f.recruit25 <- function(log.file,ssb,SRModel,trunc=FALSE,trunc.upper=2,trunc.lower=-Inf,debug=0){
+frecruit25 <- function(log.file,ssb,SRModel,trunc=FALSE,trunc.upper=2,trunc.lower=-Inf,debug=0){
     
   if (debug==1){
     log.write.func.enter(log.file,
@@ -1214,7 +1214,7 @@ f.recruit25 <- function(log.file,ssb,SRModel,trunc=FALSE,trunc.upper=2,trunc.low
 #SAD5 recruit model, historic residuals, including autocorrelation
 
 #recruit34 <- function(f,ssb,SRModel,eta,debug=0){
-f.recruit34 <- function(log.file,ssb,SRModel,year,debug=0){
+frecruit34 <- function(log.file,ssb,SRModel,year,debug=0){
   
   #log.file - debug log file
   #ssb - the ssb to be used in drawing the recruitment
@@ -1229,6 +1229,7 @@ f.recruit34 <- function(log.file,ssb,SRModel,year,debug=0){
   
   #residual
   eta <- SRModel$Resids[[as.character(year)]]
+  #eta <- SRModel$JResids[[as.character(year)]]
   
   #SSB
   ssb<-sum(ssb)
@@ -1249,6 +1250,7 @@ f.recruit34 <- function(log.file,ssb,SRModel,year,debug=0){
   
     #apply residual
     recr <- E*exp(eta)
+    #recr <- E*eta
     
     ret<-c(recr,eta,E)
 

@@ -42,21 +42,22 @@ eggcalc_wkwhmmp2<-function(SSB,wgt,aFec,bFec,qFec,segg,sex.ratio,debug=0){
   
 }
 
-eggcalc_mse2014<-function(log.file,SSB,wgt,EggModel,SexRatio=0.5,year,debug=0){
-  
-  #SSB - spawning stock biomass (true)
+#eggcalc_mse2014<-function(log.file,SSB,wgt,EggModel,SexRatio=0.5,year,debug=0){
+feggcalc_mse2014<-function(ssb,wgt,EggModel,SexRatio=0.5,year){
+    
+  #ssb - spawning stock biomass (true)
   #wgt - stock weights
   #EggModel - egg model
   #sex.ratio - male/female ratio
   #year - current simulation year
   
-  if (debug==1){
-    log.write.func.enter(log.file,formals()[-1],list(SSB,wgt,EggModel,SexRatio,year,debug))
-  }
+#   if (debug==1){
+#     log.write.func.enter(log.file,formals()[-1],list(SSB,wgt,EggModel,SexRatio,year,debug))
+#   }
   
   #cat(year,EggModel$qFec,EggModel$aFec,EggModel$bFec,EggModel$ResidFut,"\n")
   
-  EGG.true <- sum(EggModel$qFec*(EggModel$aFec + EggModel$bFec*wgt)*SSB*SexRatio)/1000
+  EGG.true <- sum(EggModel$qFec*(EggModel$aFec + EggModel$bFec*wgt)*ssb*SexRatio)/1000
   
   #cat("EGG.true=",EGG.true,"\n")
   
@@ -66,7 +67,7 @@ eggcalc_mse2014<-function(log.file,SSB,wgt,EggModel,SexRatio=0.5,year,debug=0){
   
   ret<-c(EGG.obs,EggModel$ResidFut[[as.character(year)]],EGG.true)
   
-  if(debug==1){log.write.func.exit(log.file,ret)}
+#  if(debug==1){log.write.func.exit(log.file,ret)}
   
   ret
   

@@ -16,7 +16,7 @@ f.RandSR <- function(props=c(0.46,0.32,0.22),nits){
   SR.types
 }
 
-f.SADEgg <- function(iter,nits,SADparams,EggHist,StockWeights,NatMor,Mat,
+fSADegg <- function(iter,nits,SADparams,EggHist,StockWeights,NatMor,Mat,
                     NumatAge,FatAge,SexRatio=0.5,PM=0.45,PF=0.45,startyear,years){
   
   #generate list of egg production models, including future residuals
@@ -98,7 +98,8 @@ f.SADEgg <- function(iter,nits,SADparams,EggHist,StockWeights,NatMor,Mat,
   
 }
 
-f.SADSR <- function(iter,SADparams,SRpairs,SR.types,startyear,years,det=FALSE){
+fSADsr <- function(iter,SADparams,SRpairs,SR.types,startyear,years,det=FALSE){
+#                    srDev_bh="missing",srDev_rk="missing",srDev_hs="missing"){
     
   #function returns SR details in a list
   
@@ -110,6 +111,7 @@ f.SADSR <- function(iter,SADparams,SRpairs,SR.types,startyear,years,det=FALSE){
   #startyear is the first year of the simulation
   #years number of years of simulation
   #det - deterministic run? If so, the future residuals are set to zero
+  #JResids - Jose's residuals
   
   #data years
   datYrs<-c(as.character(seq(1982,startyear-2)))
@@ -143,6 +145,8 @@ f.SADSR <- function(iter,SADparams,SRpairs,SR.types,startyear,years,det=FALSE){
     GParam <- NA
     SigR <- SADparams$sigRbh[iter]
     scor <- SADparams$scorbh[iter]
+    #JResids <- as.vector(srDev_bh[,1:201,,,,iter])
+    #names(JResids) <- dimnames(srDev_bh)$year
     
     
   } else if (SR.types[iter] == 'RK'){
@@ -169,6 +173,8 @@ f.SADSR <- function(iter,SADparams,SRpairs,SR.types,startyear,years,det=FALSE){
     GParam <- NA
     SigR <- SADparams$sigRrk[iter]
     scor <- SADparams$scorrk[iter]
+    #JResids <- as.vector(srDev_rk[,1:201,,,,iter])
+    #names(JResids) <- dimnames(srDev_bh)$year
     
   } else {
     
@@ -196,6 +202,8 @@ f.SADSR <- function(iter,SADparams,SRpairs,SR.types,startyear,years,det=FALSE){
     GParam <- SADparams$ghs[iter]
     SigR <- SADparams$sigRhs[iter]
     scor <- SADparams$scorhs[iter]
+    #JResids <- as.vector(srDev_hs[,1:201,,,,iter])
+    #names(JResids) <- dimnames(srDev_bh)$year
     
   }
 
@@ -219,5 +227,6 @@ f.SADSR <- function(iter,SADparams,SRpairs,SR.types,startyear,years,det=FALSE){
        SSB2001 = SADparams$SSB2001[iter], Bloss = SADparams$Bloss[iter], Resids = Resids, 
        HistSSB = HistSSB, HistRec = HistRec, scor2 = scor2, scratio = scor/scor2,
        SigR2 = SigR2, Sigratio = SigR/SigR2)
+  #, JResids = JResids)
   
 }

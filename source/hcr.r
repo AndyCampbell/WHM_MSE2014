@@ -512,30 +512,60 @@ set.env.var("V:hcr.r","2.0")
 # }
 
 #30/09/2014
-f.hcr20<-function(log.file,beta,w,TACref,TAC,slope,eggs,egglimit=0,egggamma=1,debug=0){
+# f.hcr20<-function(log.file,beta,w,TACref,TAC,slope,eggs,egglimit=0,egggamma=1,debug=0){
+#   
+#   if (debug==1){
+#     log.write.func.enter(log.file,formals()[-1],list(beta,w,TACref,TAC,slope,eggs,egglimit,egggamma,debug))
+#   }
+#   
+#   if (TAC==0) {
+#     
+#     #prevents division by zero later - should not be here anyway
+#     ret <- 0    
+#   
+#   } else {
+#   
+#     new.TAC <- beta*(w*TACref + (1-w)*TAC*slope)
+#     
+#     #additional reduction if the previous egg result is below the limit
+#     if (eggs[3] < egglimit){new.TAC <- new.TAC*((eggs[3]/egglimit)^egggamma)}
+#     
+#     #calculate multiplier to return
+#     ret <- new.TAC/TAC
+#     
+#   }
+#   
+#   if(debug==1){log.write.func.exit(log.file,ret)}
+#   
+#   ret
+#   
+# }
+
+
+fhcr20<-function(lopt,dfEgg,tac){
   
-  if (debug==1){
-    log.write.func.enter(log.file,formals()[-1],list(beta,w,TACref,TAC,slope,eggs,egglimit,egggamma,debug))
-  }
+  #lopt - list of simulation options
+  #dfEgg - dataframe with egg counts 2 columns - Year & EggCount
+  #tac - the current tac
   
-  if (TAC==0) {
+  if (tac==0) {
     
     #prevents division by zero later - should not be here anyway
     ret <- 0    
-  
+    
   } else {
-  
-    new.TAC <- beta*(w*TACref + (1-w)*TAC*slope)
+    
+    new_tac <- lopt$beta*(lopt$w*lopt$TACref + (1-lopt$w)*tac*feggslope(rev(rev(dfEgg$EggCount)[1:3])))
     
     #additional reduction if the previous egg result is below the limit
-    if (eggs[3] < egglimit){new.TAC <- new.TAC*((eggs[3]/egglimit)^egggamma)}
+    if (rev(dfEgg$EggCount)[1] < lopt$egglimit){
+      new_tac <- new_tac*((rev(dfEgg$EggCount)[1]/lopt$egglimit)^lopt$egggamma)
+    }
     
     #calculate multiplier to return
-    ret <- new.TAC/TAC
+    ret <- new_tac
     
   }
-  
-  if(debug==1){log.write.func.exit(log.file,ret)}
   
   ret
   

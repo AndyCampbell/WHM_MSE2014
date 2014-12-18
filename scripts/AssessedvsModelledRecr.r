@@ -84,7 +84,7 @@ years <- 100  #generate 100 years of future residuals
 startyear <- 2014
 indata <- read.table(".\\indata\\SADMSE2014_WHMParams_15_09_2014.dat",header=TRUE,sep=",")
 SR.types<-f.RandSR(nits=nits)
-lSR<-lapply(seq(1:nits),FUN=f.SADSR,SADparams=indata,SRpairs=SRpairs,SR.types=SR.types,startyear=startyear,years=years)
+lSR<-lapply(seq(1:nits),FUN=fSADsr,SADparams=indata,SRpairs=SRpairs,SR.types=SR.types,startyear=startyear,years=years)
 
 #initialize some vectors
 rec.obs<-c()
