@@ -940,6 +940,10 @@ fCalc_MSE2014_stats <- function(ref,fname,period,nits=NULL,ssbref=1.24e6){
 
 fgen_Latex <- function(opt_file) {
 
+  #generate a latex table from stats files
+  #reads stats files from stats directory, write .tex file into tables directory
+  #directories/stat files need to exist - does not check!
+  
   require(xtable)
   require(dplyr)
   
