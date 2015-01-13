@@ -49,18 +49,19 @@ opt_files <- c("MSE2014_300","MSE2014_301","MSE2014_302","MSE2014_303","MSE2014_
 
 for (opt_file in opt_files){
 
-  fFPRESS_run(runref = opt_file)
-  
-  lapply(list("st" = c(2014,2023), "mt" = c(2014,2033), "lt" = c(2034,2053)),
-         function(x) fCalc_MSE2014_stats(ref = opt_file,
+  #fFPRESS_run(runref = opt_file)
+
+  lapply(list("st" = c(2014,2023), "mt" = c(2014,2033), "lt" = c(2034,2053),"lt1" = c(2054,2073),"lt2" = c(2074,2093)),
+         function(x) fCalcMSE2014stats(ref = opt_file,
                                          fname = paste(".\\stats\\",opt_file,".dat",sep=""),
                                          period = c(x[1],x[2]),
-                                         ssbref = 1.24e6))
-  lapply(seq(2014,2063),
-         function(x) fCalc_MSE2014_stats(ref = opt_file,
+                                         ssbref = 0.634577e6))
+  
+  lapply(seq(2014,2104),
+         function(x) fCalcMSE2014stats(ref = opt_file,
                                          fname = paste(".\\stats\\",opt_file,".dat",sep=""),
                                          period = c(x,x),
-                                         ssbref = 1.24e6))
+                                         ssbref = 0.634577e6))
   
   fMSE2014ssbplot(opt_file, file = paste0(opt_file,"_SSB"), ext = "png", ymaxval = 6)
   fMSE2014yieldplot(opt_file, file = paste0(opt_file,"_Yld"), ext = "png")
@@ -70,8 +71,8 @@ for (opt_file in opt_files){
 
 }
 
-#calculate statistics
-lapply(opt_files,fgen_Latex)
+#create stats tables for report
+lapply(opt_files,fgenLatex)
 
 
 
