@@ -638,3 +638,42 @@ axis(2,at=c(0,0.2,0.4,0.6,0.8,1.0),las=2,cex.axis=1.25)
 mtext("Egg Count",side=1,line=3,cex=1.25)
 mtext("TAC Multiplier",side=2,line=3,cex=1.25)
 dev.off()
+
+
+#catch at age - circle area proportional to number 
+dfcaa <- read.table(file = paste(FPRESS.Home(),".\\indata\\WHM_CatchAtAge.dat",sep=""),
+                    header = FALSE,sep = ",",col.names = c("Year",paste("Age",seq(0,11,by=1),sep="")))
+jpeg(filename=".//plots//CAA.jpg",
+     width=788, height=549, quality=100)
+plot(NA, xlim = c(1982,2012), ylim = c(0,12), type = "n", xlab = "Year", ylab = "Age", axes=FALSE)
+symbols(rep(dfcaa$Year,ncol(dfcaa)-1)[select(dfcaa,contains("Age"))>0],
+        rep(seq(0,11),each=nrow(dfcaa))[select(dfcaa,contains("Age"))>0],
+        circles=sqrt(unlist(select(dfcaa,contains("Age")))[select(dfcaa,contains("Age"))>0])/pi,inches=0.3,fg="black",bg="grey",add=TRUE)
+axis(1, at = dfcaa$Year)
+axis(2, at = seq(0,11), labels=c("0","1","2","3","4","5","6","7","8","9","10","11+"),las=2)
+dev.off()
+
+
+#egg production
+prod2010<-c(0.021,0.095,0.286,0.043,0.477,0.037,0.130,0.004)
+
+
+#initial parameters
+dfinit <- read.table(file = paste(FPRESS.Home(),".\\indata\\SADMSE2014_WHMParams_15_09_2014.dat",sep=""),
+                     header = TRUE,sep = ",")
+
+tblinit <- tbl_df(dfinit)
+#take a quick look
+glimpse(tblinit)
+#full dataset in a grid..
+View(tblinit)
+
+
+
+
+plot(dfinit$aFec,dfinit$bFec,type="p",xlab="aFec parameter",ylab="bFec parameter")
+lmFec <- lm(bFec~aFec,data=dfinit)
+summary(lmFec)
+#correlation between aFec and bFec
+with(dfinit,cor(bFec,aFec))
+
