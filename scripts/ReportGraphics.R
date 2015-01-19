@@ -654,13 +654,30 @@ axis(2, at = seq(0,11), labels=c("0","1","2","3","4","5","6","7","8","9","10","1
 dev.off()
 
 
-#egg production
-prod2010<-c(0.021,0.095,0.286,0.043,0.477,0.037,0.130,0.004)
+#egg production curves
+dfEggProd <- read.table(file = paste(FPRESS.Home(),".\\indata\\WHM_EggProd.dat",sep=""),
+                    header = TRUE,sep = ",")
+
+jpeg(filename=".//plots//EggProd.jpg",width=788, height=549, quality=100)
+
+plot(NA,axes=F,xlab="Julian Day",ylab="Egg Production x10^12",xlim=c(40,220),ylim=c(0,25))
+axis(1,at=seq(40,220,by=10))
+axis(2,at=seq(0,25,by=5))
+
+lapply(unique(dfEggProd$Year),
+       function(x){
+         with(filter(dfEggProd,Year==x),{
+           points(MidJulian,DailyEst,pch=which(unique(dfEggProd$Year)==x))
+           lines(MidJulian,DailyEst,lty=which(unique(dfEggProd$Year)==x),lwd=2) 
+         })
+       })
+legend("topleft",legend=unique(dfEggProd$Year),bty="n",pch=seq(1,length(unique(dfEggProd$Year))),
+       lty=seq(1,length(unique(dfEggProd$Year))),lwd=2)
+
+dev.off()
 
 
-#initial parameters
-dfinit <- read.table(file = paste(FPRESS.Home(),".\\indata\\SADMSE2014_WHMParams_15_09_2014.dat",sep=""),
-                     header = TRUE,sep = ",")
+
 
 tblinit <- tbl_df(dfinit)
 #take a quick look
