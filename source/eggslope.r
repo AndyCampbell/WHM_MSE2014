@@ -7,7 +7,7 @@
 #Sys.setenv("V:eggslope.r"="2.0")
 
 #assign the environment var V:eggslope.r
-set.env.var("V:eggslope.r","2.0")
+fset_env_var("V:eggslope.r","2.0")
 
 #eggslope <- function(eggs,debug=0) {
 feggslope <- function(eggs,debug=0) {
