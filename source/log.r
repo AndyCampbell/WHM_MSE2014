@@ -292,8 +292,8 @@ fread_options <- function(optionsfile,call) {
 
   nits <- if ('iterations' %in% names(c)) {c$iterations} else {as.integer(fnodeval(root,"iterations",1))}
   
-  list('outfolder' = fnodeval(root,"outfolder",FPRESS.Home()),
-       'outdata.path' = paste(fnodeval(root,"outfolder",FPRESS.Home()),"\\outdata\\",sep=""),
+  list('outfolder' = fnodeval(root,"outfolder",fFPRESS_home()),
+       'outdata.path' = paste(fnodeval(root,"outfolder",fFPRESS_home()),"\\outdata\\",sep=""),
        'Paramfile' = fnodeval(root,"datfile",""),
        'SWfile' = fnodeval(root,"SWfile",""),
        'CWfile' = fnodeval(root,"CWfile",""),
