@@ -8,6 +8,19 @@ gc()
 source(".Rprofile")
 fsourceDir()
 
+#create runlogs directory
+runlogs.dir <- paste(fFPRESS_home(),"\\runlogs",sep="");
+#create the directory, suppress the showWarnings so that no warning
+#is issued if the folder already exists
+dir.create(runlogs.dir, recursive = TRUE, showWarnings = FALSE)
+
+#create outdata directory
+outdata.dir <- paste(fFPRESS_home(),"\\outdata",sep="");
+#create the directory, suppress the showWarnings so that no warning
+#is issued if the folder already exists
+dir.create(outdata.dir, recursive = TRUE, showWarnings = FALSE)
+
+
 
 #long term (MSY investigation) runs, no HCR applied
 #options files - two different assessments are used for conditioning. 
