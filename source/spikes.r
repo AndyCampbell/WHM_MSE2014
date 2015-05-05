@@ -45,7 +45,7 @@ fgenerate_spikes<-function(mean_interval, spike_var, projyr, offset = 0, spike_y
   x <- x*spike_var
   
   #multiply by mean_interval
-  y <-mean_interval*(x+1-spike_var/2)
+  y <- mean_interval*(x+1-spike_var/2)
   
   #round to the nearest integer, this becomes the time to the next spike
   y <- round(y,0)
@@ -55,12 +55,15 @@ fgenerate_spikes<-function(mean_interval, spike_var, projyr, offset = 0, spike_y
   y[1] <- y[1] - offset
   
   # convert the vector of time intervals in a time series of 0s (for normal years) or 1 (for spikes)
-  spikes<-c()
+  spikes <- c()
   
-  for (i in 1:length(y)) spikes<-c(spikes,rep(0,(y[i]-1)),1)
+  for (i in 1:length(y)) {
+    spikes <- c(spikes,rep(0,max(1,(y[i]-1))),1)
+    #spikes <- c(spikes,rep(0,(y[i]-1)),1)
+  }
   
   #trim vector to necessary length
-  spikes<-spikes[1:projyr]
+  spikes <- spikes[1:projyr]
   
   # sample between the two observed spikes :  sample(c(6,19),1)
   spikes[spikes==1] <- sample(x = spike_years,

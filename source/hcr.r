@@ -3,12 +3,9 @@
 #Marine Institite, Galway
 #andrew.campbell@marine.ie
 #HCR functions
-#V2 - consolidated 07/10/2008
-#Sys.putenv("V:hcr.r"="2.0")
-#Sys.setenv("V:hcr.r"="2.0")
 
 #assign the environment var V:hcr.r
-set.env.var("V:hcr.r","2.0")
+fset_env_var("V:hcr.r","2.0")
 
 ############################################################ 
 # HCR rule 1

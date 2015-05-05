@@ -1,8 +1,5 @@
-#Sys.putenv("V:hcryear.r"="2.0")
-#Sys.setenv("V:hcryear.r"="2.0")
-
 #assign the environment var V:hcryear.r
-set.env.var("V:hcryear.r","2.0")
+fset_env_var("V:hcryear.r","2.0")
 
 #hcryear<-function(log.file,year,hcr.period,first.management.year,debug=0) {
 fis_hcr_year<-function(year,hcr_period,first_management_year) {

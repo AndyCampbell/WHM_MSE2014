@@ -7,40 +7,40 @@
 #Sys.setenv("V:eggcalc.r"="2.0")
 
 #assign the environment var V:eggcalc.r
-set.env.var("V:eggcalc.r","2.0")
+fset_env_var("V:eggcalc.r","2.0")
 
-eggcalc<-function(SSB,SSBW,q,b,CVegg,Lambda,debug=0) {
-
-  if(debug==1){
-    cat("SSB=",SSB,"\n")
-  }
-  
-   #calculate 'true' egg abundance
-
-   EGG.true <- (q*SSB + b*SSBW)/2000	  #what's this for?
-   EGG.true <- EGG.true*exp(Lambda*qnorm(runif(1)))
-
-   #incorporate sampling cv
-   EGG.obs <- EGG.true*exp(CVegg*qnorm(runif(1)))
-
-   return(EGG.obs)
-
-}
-
-eggcalc_wkwhmmp2<-function(SSB,wgt,aFec,bFec,qFec,segg,sex.ratio,debug=0){
-
-	#SSB - spawning stock biomass (true)
-	#wgt - stock weights
-	#aFec,bFec - fecundity parameters
-	#qFec - realised fecundity parameter
-	#segg - egg standard deviation
-	#sex.ratio - male/female ratio
-  
-	EGG.true <- sum(qFec*(aFec + bFec*wgt)*SSB*sex.ratio)/1000
-  
-  EGG.obs <- EGG.true*exp(segg*rnorm(n=1,mean=0,sd=1))
-  
-}
+# eggcalc<-function(SSB,SSBW,q,b,CVegg,Lambda,debug=0) {
+# 
+#   if(debug==1){
+#     cat("SSB=",SSB,"\n")
+#   }
+#   
+#    #calculate 'true' egg abundance
+# 
+#    EGG.true <- (q*SSB + b*SSBW)/2000	  #what's this for?
+#    EGG.true <- EGG.true*exp(Lambda*qnorm(runif(1)))
+# 
+#    #incorporate sampling cv
+#    EGG.obs <- EGG.true*exp(CVegg*qnorm(runif(1)))
+# 
+#    return(EGG.obs)
+# 
+# }
+# 
+# eggcalc_wkwhmmp2<-function(SSB,wgt,aFec,bFec,qFec,segg,sex.ratio,debug=0){
+# 
+# 	#SSB - spawning stock biomass (true)
+# 	#wgt - stock weights
+# 	#aFec,bFec - fecundity parameters
+# 	#qFec - realised fecundity parameter
+# 	#segg - egg standard deviation
+# 	#sex.ratio - male/female ratio
+#   
+# 	EGG.true <- sum(qFec*(aFec + bFec*wgt)*SSB*sex.ratio)/1000
+#   
+#   EGG.obs <- EGG.true*exp(segg*rnorm(n=1,mean=0,sd=1))
+#   
+# }
 
 #eggcalc_mse2014<-function(log.file,SSB,wgt,EggModel,SexRatio=0.5,year,debug=0){
 feggcalc_mse2014<-function(ssb,wgt,EggModel,SexRatio=0.5,year){

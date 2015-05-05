@@ -17,557 +17,538 @@
 # }
 
 
-# fMSE2014ssbplot<-function(ref,box.whisker = 1,conf.int = 0,yminval = "missing",
-#                          ymaxval = "missing",J1 = TRUE,Bref = "missing",
-#                          file = "missing",ext = "missing",debug = 0){
-#   
-#   #ref - simulation reference
-#   #conf.int - plot confidence intervals?
-#   #box.whisker - box whisker plots?
-#   #yminval - minimum y value
-#   #ymaxval = maximum y value
-#   #J1 - SSB at Jan 1, otherwise at spawning time
-#   #Brefs - draws reference lines
-#   
-#   #save graphics settings
-#   def.par <- par(no.readonly=TRUE)
-#   
-#   #read the log file
-#   log <- fread_log(ref)
-#   
-#   #read the output file
-#   if (file.exists(log$outfile)){
-#     dat <- load(log$outfile)
-#   } else {
-#     stop(paste("Cannot find",log$outfile,sep=" "))
-#   }
-#   
-#   #calculate the SSB by summing over ages & convert to Mt
-#   if (J1) {ssb <- quantSums(op.SSB.J1.true)} else {ssb <- quantSums(op.SSB.st.true)}
-#   #convert to Mt
-#   ssb <- ssb/1e6
-#   
-#   #calculate stats
-#   #median
-#   med.ssb <- apply(X=ssb,MARGIN=c("year"),FUN=median)
-#   #mean
-#   mean.ssb <- apply(X=ssb,MARGIN=c("year"),FUN=mean)
-#   #SD
-#   SD.ssb <- sqrt(apply(X=ssb,MARGIN=c("year"),FUN="var"))
-#   
-#   #percentiles
-#   pct.ssb <- apply(X=ssb,MARGIN=c("year"),FUN=quantile,probs=seq(0.05,0.95,by=0.05))
-#   
-#   if (!missing(file)) {
-#     if (!missing(ext)) {
-#       if (ext=="pdf") {
-#         pdf(file=paste(FPRESS.Home(),"\\plots\\",paste(file,"pdf",sep="."),sep=""))
-#       } else if (ext=="png"){
-#         png(filename=paste(FPRESS.Home(),"\\plots\\",paste(file,"png",sep="."),sep=""))
-#       } else {
-#         #default is pdf is not otherwise coded
-#         pdf(file=paste(FPRESS.Home(),"\\plots\\",paste(file,"pdf",sep="."),sep=""))
-#       }
-#     } else {
-#       #default is pdf
-#       pdf(file=paste(FPRESS.Home(),"\\plots\\",paste(file,"pdf",sep="."),sep=""))
-#     }
-#   } 
-#   
-#   #outer margins
-#   par.omi <- par("omi")
-#   par(omi=c(0.2,0.3,0.1,0))
-#   
-#   #individual plot margin lines
-#   par.mar <- par("mar")
-#   par(mar=c(2,2,1,0))
-#   
-#   #empty plot
-#   yr<-seq(log$startyear,len=log$years)
-#   ydum<-seq(0,10,len=length(yr))
-#   
-#   if (missing(ymaxval)) {
-#     if (missing(yminval)) {
-#       #both limits missing
-#       plot(yr,ydum,type="n",xlab="Year",ylab="SSB (Mt)",axes=FALSE)    
-#     } else {
-#       #only max limit missing
-#       plot(yr,ydum,type="n",xlab="Year",ylab="SSB (Mt)",axes=FALSE,ylim=c(yminval,max(ydum)))    
-#     }
-#   } else {
-#     if (missing(yminval)){
-#       #min limit missing
-#       plot(yr,ydum,type="n",xlab="Year",ylab="SSB (Mt)",axes=FALSE,ylim=c(0,ymaxval))    
-#     } else {
-#       plot(yr,ydum,type="n",xlab="Year",ylab="SSB (Mt)",axes=FALSE,ylim=c(yminval,ymaxval))    
-#     }
-#   }
-#   
-#   
-#   #axes
-#   axis(1,at=seq(from=5*ceiling(min(yr)/5),to=5*floor(max(yr)/5),by=5),cex.axis=1.5)
-#   axis(2,cex.axis=1.5,las=2)
-#   
-#   #median
-#   lines(yr,med.ssb)
-#   
-#   #box/whisker
-#   if(box.whisker==1){
-#     for(i in 1:(length(yr))){
-#       boxplot(ssb[,i,,,],range=0.1,add=TRUE,at=yr[i],axes=FALSE,pch=".")
-#     }
-#   }
-#   
-#   #percentiles
-#   points(yr,pct.ssb["10%",],pch=20,col="red")
-#   points(yr,pct.ssb["90%",],pch=20,col="red")  
-#   lines(yr,pct.ssb["10%",],lty=2,col="red")
-#   lines(yr,pct.ssb["90%",],lty=2,col="red")
-#   
-#   #annotations
-#   mtext("(a) SSB (Mt)",side=3,adj=0,cex=1.5)
-#   
-#   #confidence intervals (assumes normal distribution)
-#   #plot 95%/99% confidence lines?
-#   if(conf.int==1){
-#     lines(yr,mean.ssb-1.96*SD.ssb,lty=2)
-#     lines(yr,mean.ssb+1.96*SD.ssb,lty=2)
-#     lines(yr,mean.ssb-2.58*SD.ssb,lty=2)
-#     lines(yr,mean.ssb+2.58*SD.ssb,lty=2)
-#   }
-#   
-#   abline(h=0.634577,lty=2,col="red")
-#   
-#   #box(which = 'outer', lty = '1373', col = 'red')
-#   
-#   if (!missing(file)) {dev.off()}
-#   
-#   #restore plotting defaults
-#   par(omi=par.omi)
-#   par(mar=par.mar)
-#   
-# }
+fMSE2014ssbplot<-function(ref,box.whisker = 1,conf.int = 0,yminval = "missing",
+                         ymaxval = "missing",J1 = TRUE,Bref = "missing",
+                         file = "missing",ext = "missing",debug = 0){
+  
+  #ref - simulation reference
+  #conf.int - plot confidence intervals?
+  #box.whisker - box whisker plots?
+  #yminval - minimum y value
+  #ymaxval = maximum y value
+  #J1 - SSB at Jan 1, otherwise at spawning time
+  #Brefs - draws reference lines
+  
+  #save graphics settings
+  def.par <- par(no.readonly=TRUE)
+  
+  #read the log file
+  log <- fread_log(ref)
+  
+  #read the output file
+  if (file.exists(log$outfile)){
+    dat <- load(log$outfile)
+  } else {
+    stop(paste("Cannot find",log$outfile,sep=" "))
+  }
+  
+  #calculate the SSB by summing over ages & convert to Mt
+  if (J1) {ssb <- quantSums(op.SSB.J1.true)} else {ssb <- quantSums(op.SSB.st.true)}
+  #convert to Mt
+  ssb <- ssb/1e6
+  
+  #calculate stats
+  #median
+  med.ssb <- apply(X=ssb,MARGIN=c("year"),FUN=median)
+  #mean
+  mean.ssb <- apply(X=ssb,MARGIN=c("year"),FUN=mean)
+  #SD
+  SD.ssb <- sqrt(apply(X=ssb,MARGIN=c("year"),FUN="var"))
+  
+  #percentiles
+  pct.ssb <- apply(X=ssb,MARGIN=c("year"),FUN=quantile,probs=seq(0.05,0.95,by=0.05))
+  
+  if (!missing(file)) {
+    if (!missing(ext)) {
+      if (ext=="pdf") {
+        pdf(file=paste(fFPRESS_home(),"\\plots\\",paste(file,"pdf",sep="."),sep=""))
+      } else if (ext=="png"){
+        png(filename=paste(fFPRESS_home(),"\\plots\\",paste(file,"png",sep="."),sep=""))
+      } else {
+        #default is pdf is not otherwise coded
+        pdf(file=paste(fFPRESS_home(),"\\plots\\",paste(file,"pdf",sep="."),sep=""))
+      }
+    } else {
+      #default is pdf
+      pdf(file=paste(fFPRESS_home(),"\\plots\\",paste(file,"pdf",sep="."),sep=""))
+    }
+  } 
+  
+  #outer margins
+  par.omi <- par("omi")
+  par(omi=c(0.2,0.3,0.1,0))
+  
+  #individual plot margin lines
+  par.mar <- par("mar")
+  par(mar=c(2,2,1,0))
+  
+  #empty plot
+  yr<-seq(log$startyear,len=log$years)
+  ydum<-seq(0,10,len=length(yr))
+  
+  if (missing(ymaxval)) {
+    if (missing(yminval)) {
+      #both limits missing
+      plot(yr,ydum,type="n",xlab="Year",ylab="SSB (Mt)",axes=FALSE)    
+    } else {
+      #only max limit missing
+      plot(yr,ydum,type="n",xlab="Year",ylab="SSB (Mt)",axes=FALSE,ylim=c(yminval,max(ydum)))    
+    }
+  } else {
+    if (missing(yminval)){
+      #min limit missing
+      plot(yr,ydum,type="n",xlab="Year",ylab="SSB (Mt)",axes=FALSE,ylim=c(0,ymaxval))    
+    } else {
+      plot(yr,ydum,type="n",xlab="Year",ylab="SSB (Mt)",axes=FALSE,ylim=c(yminval,ymaxval))    
+    }
+  }
+  
+  
+  #axes
+  axis(1,at=seq(from=5*ceiling(min(yr)/5),to=5*floor(max(yr)/5),by=5),cex.axis=1.5)
+  axis(2,cex.axis=1.5,las=2)
+  
+  #median
+  lines(yr,med.ssb)
+  
+  #box/whisker
+  if(box.whisker==1){
+    for(i in 1:(length(yr))){
+      boxplot(ssb[,i,,,],range=0.1,add=TRUE,at=yr[i],axes=FALSE,pch=".")
+    }
+  }
+  
+  #percentiles
+  points(yr,pct.ssb["10%",],pch=20,col="red")
+  points(yr,pct.ssb["90%",],pch=20,col="red")  
+  lines(yr,pct.ssb["10%",],lty=2,col="red")
+  lines(yr,pct.ssb["90%",],lty=2,col="red")
+  
+  #annotations
+  mtext("(a) SSB (Mt)",side=3,adj=0,cex=1.5)
+  
+  #confidence intervals (assumes normal distribution)
+  #plot 95%/99% confidence lines?
+  if(conf.int==1){
+    lines(yr,mean.ssb-1.96*SD.ssb,lty=2)
+    lines(yr,mean.ssb+1.96*SD.ssb,lty=2)
+    lines(yr,mean.ssb-2.58*SD.ssb,lty=2)
+    lines(yr,mean.ssb+2.58*SD.ssb,lty=2)
+  }
+  
+  abline(h=0.634577,lty=2,col="red")
+  
+  #box(which = 'outer', lty = '1373', col = 'red')
+  
+  if (!missing(file)) {dev.off()}
+  
+  #restore plotting defaults
+  par(omi=par.omi)
+  par(mar=par.mar)
+  
+}
 
-# fMSE2014yieldplot<-function(ref,box.whisker=1,conf.int=0,
-#                            yminval="missing",ymaxval="missing",
-#                            file="missing",ext="missing"){
-#   
-#   #save graphics settings
-#   def.par <- par(no.readonly=TRUE)
-#   
-#   #read the log file
-#   log <- fread_log(ref)
-#   
-#   #read the output file
-#   if (file.exists(log$outfile)){
-#     #remove any existing CatchWeight object
-#     #if (exists("op.CatchWeight")) {rm("op.CatchWeight")}
-#     dat <- load(log$outfile)
-#   } else {
-#     stop(paste("Cannot find",log$outfile,sep=" "))
-#   }
-#   
-#   #check object CatchWeight was saved by this simulation
-#   if (!exists("op.CatchWeight")){stop(paste("No CatchWeight object for simulation",ref,sep=" "))}
-#   
-#   #calculate the yield by summing over ages & convert to kt
-#   Yld<-quantSums(op.CatchWeight)/1e3
-#   
-#   #calculate stats
-#   #median
-#   med.yld <- apply(X=Yld,MARGIN=c("year"),FUN=median)
-#   #mean
-#   mean.yld <- apply(X=Yld,MARGIN=c("year"),FUN=mean)
-#   #SD
-#   SD.yld <- sqrt(apply(X=Yld,MARGIN=c("year"),FUN="var"))
-#   
-#   #percentiles
-#   pct.yld <- apply(X=Yld,MARGIN=c("year"),FUN=quantile,probs=seq(0.05,0.95,by=0.05))
-#   
-#   if (!missing(file)) {
-#     if (!missing(ext)) {
-#       if (ext=="pdf") {
-#         pdf(file=paste(FPRESS.Home(),"\\plots\\",paste(file,"pdf",sep="."),sep=""))
-#       } else if (ext=="png"){
-#         png(filename=paste(FPRESS.Home(),"\\plots\\",paste(file,"png",sep="."),sep=""))
-#       } else {
-#         #default is pdf is not otherwise coded
-#         pdf(file=paste(FPRESS.Home(),"\\plots\\",paste(file,"pdf",sep="."),sep=""))
-#       }
-#     } else {
-#       #default is pdf
-#       pdf(file=paste(FPRESS.Home(),"\\plots\\",paste(file,"pdf",sep="."),sep=""))
-#     }
-#   } 
-#   
-#   #if (!missing(file)) {
-#   #  pdf(file=paste(FPRESS.Home(),"\\plots\\",file,sep=""))
-#   #  #png(file=paste(FPRESS.Home(),"\\plots\\",file,sep=""),width=480,height=480)
-#   #}
-#   
-#   #outer margins
-#   par.omi <- par("omi")
-#   par(omi=c(0.2,0.3,0.1,0))
-#   
-#   #individual plot margin lines
-#   par.mar <- par("mar")
-#   par(mar=c(2,2,1,0))
-#   
-#   #empty plot
-#   yr<-seq(log$startyear,len=log$years)
-#   ydum<-seq(0,max(Yld),len=length(yr))
-#   plot(yr,ydum,type="n",xlab="Year",ylab="Yield (kt)",axes=FALSE,ylim=c(0,250))
-#   
-#   #axes
-#   axis(1,at=seq(from=5*ceiling(min(yr)/5),to=5*floor(max(yr)/5),by=5),cex.axis=1.5)
-#   axis(2,cex.axis=1.5,las=2)
-#   
-#   #median
-#   lines(yr,med.yld)
-#   
-#   #mean
-#   #lines(yr,mean.yld)
-#   
-#   #box/whisker
-#   if(box.whisker==1){
-#     for(i in 1:(length(yr))){
-#       boxplot(Yld[,i,,,],range=0.1,add=TRUE,at=yr[i],axes=FALSE,pch=".")
-#     }
-#   }
-#   
-#   #percentiles
-#   points(yr,pct.yld["10%",],pch=20,col="red")
-#   points(yr,pct.yld["90%",],pch=20,col="red")  
-#   lines(yr,pct.yld["10%",],lty=2,col="red")
-#   lines(yr,pct.yld["90%",],lty=2,col="red")
-#   
-#   #annotations
-#   mtext("(b) Yield (kt)",side=3,adj=0,cex=1.5)
-#   
-#   #confidence intervals (assumes normal distribution)
-#   #plot 95%/99% confidence lines?
-#   if(conf.int==1){
-#     lines(yr,mean.yld-1.96*SD.yld,lty=2)
-#     lines(yr,mean.yld+1.96*SD.yld,lty=2)
-#     lines(yr,mean.yld-2.58*SD.yld,lty=2)
-#     lines(yr,mean.yld+2.58*SD.yld,lty=2)
-#   }
-#   
-#   #box(which = 'outer', lty = '1373', col = 'red')
-#   
-#   if (!missing(file)) {dev.off()}
-#   
-#   #restore plotting defaults
-#   par(omi=par.omi)
-#   par(mar=par.mar)
-#   
-# }
+fMSE2014yieldplot<-function(ref,box.whisker=1,conf.int=0,
+                           yminval="missing",ymaxval="missing",
+                           file="missing",ext="missing"){
+  
+  #save graphics settings
+  def.par <- par(no.readonly=TRUE)
+  
+  #read the log file
+  log <- fread_log(ref)
+  
+  #read the output file
+  if (file.exists(log$outfile)){
+    #remove any existing CatchWeight object
+    #if (exists("op.CatchWeight")) {rm("op.CatchWeight")}
+    dat <- load(log$outfile)
+  } else {
+    stop(paste("Cannot find",log$outfile,sep=" "))
+  }
+  
+  #check object CatchWeight was saved by this simulation
+  if (!exists("op.CatchWeight")){stop(paste("No CatchWeight object for simulation",ref,sep=" "))}
+  
+  #calculate the yield by summing over ages & convert to kt
+  Yld<-quantSums(op.CatchWeight)/1e3
+  
+  #calculate stats
+  #median
+  med.yld <- apply(X=Yld,MARGIN=c("year"),FUN=median)
+  #mean
+  mean.yld <- apply(X=Yld,MARGIN=c("year"),FUN=mean)
+  #SD
+  SD.yld <- sqrt(apply(X=Yld,MARGIN=c("year"),FUN="var"))
+  
+  #percentiles
+  pct.yld <- apply(X=Yld,MARGIN=c("year"),FUN=quantile,probs=seq(0.05,0.95,by=0.05))
+  
+  if (!missing(file)) {
+    if (!missing(ext)) {
+      if (ext=="pdf") {
+        pdf(file=paste(fFPRESS_home(),"\\plots\\",paste(file,"pdf",sep="."),sep=""))
+      } else if (ext=="png"){
+        png(filename=paste(fFPRESS_home(),"\\plots\\",paste(file,"png",sep="."),sep=""))
+      } else {
+        #default is pdf is not otherwise coded
+        pdf(file=paste(fFPRESS_home(),"\\plots\\",paste(file,"pdf",sep="."),sep=""))
+      }
+    } else {
+      #default is pdf
+      pdf(file=paste(fFPRESS_home(),"\\plots\\",paste(file,"pdf",sep="."),sep=""))
+    }
+  } 
+  
+  #outer margins
+  par.omi <- par("omi")
+  par(omi=c(0.2,0.3,0.1,0))
+  
+  #individual plot margin lines
+  par.mar <- par("mar")
+  par(mar=c(2,2,1,0))
+  
+  #empty plot
+  yr<-seq(log$startyear,len=log$years)
+  ydum<-seq(0,max(Yld),len=length(yr))
+  plot(yr,ydum,type="n",xlab="Year",ylab="Yield (kt)",axes=FALSE,ylim=c(0,250))
+  
+  #axes
+  axis(1,at=seq(from=5*ceiling(min(yr)/5),to=5*floor(max(yr)/5),by=5),cex.axis=1.5)
+  axis(2,cex.axis=1.5,las=2)
+  
+  #median
+  lines(yr,med.yld)
+  
+  #mean
+  #lines(yr,mean.yld)
+  
+  #box/whisker
+  if(box.whisker==1){
+    for(i in 1:(length(yr))){
+      boxplot(Yld[,i,,,],range=0.1,add=TRUE,at=yr[i],axes=FALSE,pch=".")
+    }
+  }
+  
+  #percentiles
+  points(yr,pct.yld["10%",],pch=20,col="red")
+  points(yr,pct.yld["90%",],pch=20,col="red")  
+  lines(yr,pct.yld["10%",],lty=2,col="red")
+  lines(yr,pct.yld["90%",],lty=2,col="red")
+  
+  #annotations
+  mtext("(b) Yield (kt)",side=3,adj=0,cex=1.5)
+  
+  #confidence intervals (assumes normal distribution)
+  #plot 95%/99% confidence lines?
+  if(conf.int==1){
+    lines(yr,mean.yld-1.96*SD.yld,lty=2)
+    lines(yr,mean.yld+1.96*SD.yld,lty=2)
+    lines(yr,mean.yld-2.58*SD.yld,lty=2)
+    lines(yr,mean.yld+2.58*SD.yld,lty=2)
+  }
+  
+  #box(which = 'outer', lty = '1373', col = 'red')
+  
+  if (!missing(file)) {dev.off()}
+  
+  #restore plotting defaults
+  par(omi=par.omi)
+  par(mar=par.mar)
+  
+}
 
-# fMSE2014fbarplot<-function(ref,box.whisker=1,conf.int=0,
-#                           yminval="missing",ymaxval="missing",
-#                           file="missing",ext="missing"){
-#   
-#   #save graphics settings
-#   def.par <- par(no.readonly=TRUE)
-#   
-#   #read the log file
-#   log <- fread_log(ref)
-#   
-#   #read the output file
-#   if (file.exists(log$outfile)){
-#     dat <- load(log$outfile)
-#   } else {
-#     stop(paste("Cannot find",log$outfile,sep=" "))
-#   }
-#   
-#   #check object FBar was saved by this simulation
-#   if (!exists("op.fbar")){stop(paste("No FBar object for simulation",ref,sep=" "))}
-#   
-#   #calculate stats
-#   #median
-#   med.fbar <- apply(X=op.fbar,MARGIN=c("year"),FUN=median)
-#   #mean
-#   mean.fbar <- apply(X=op.fbar,MARGIN=c("year"),FUN=mean)
-#   #SD
-#   SD.fbar <- sqrt(apply(X=op.fbar,MARGIN=c("year"),FUN="var"))
-#   
-#   #percentiles
-#   pct.fbar <- apply(X=op.fbar,MARGIN=c("year"),FUN=quantile,probs=seq(0.05,0.95,by=0.05))
-#   
-# 
-#   if (!missing(file)) {
-#     if (!missing(ext)) {
-#       if (ext=="pdf") {
-#         pdf(file=paste(FPRESS.Home(),"\\plots\\",paste(file,"pdf",sep="."),sep=""))
-#       } else if (ext=="png"){
-#         png(filename=paste(FPRESS.Home(),"\\plots\\",paste(file,"png",sep="."),sep=""))
-#       } else {
-#         #default is pdf is not otherwise coded
-#         pdf(file=paste(FPRESS.Home(),"\\plots\\",paste(file,"pdf",sep="."),sep=""))
-#       }
-#     } else {
-#       #default is pdf
-#       pdf(file=paste(FPRESS.Home(),"\\plots\\",paste(file,"pdf",sep="."),sep=""))
-#     }
-#   } 
-#   
-# #   if (!missing(file)) {
-# #     pdf(file=paste(FPRESS.Home(),"\\plots\\",file,sep=""))
-# #     #png(file=paste(FPRESS.Home(),"\\plots\\",file,sep=""),width=480,height=480)
-# #   }
-# #   
-#   #outer margins
-#   par.omi <- par("omi")
-#   par(omi=c(0.2,0.3,0.1,0))
-#   
-#   #individual plot margin lines
-#   par.mar <- par("mar")
-#   par(mar=c(2,2,1,0))
-#   
-#   #empty plot
-#   yr<-seq(log$startyear,len=log$years)
-#   ydum<-seq(0,0.2,len=length(yr))
-#   plot(yr,ydum,type="n",xlab="Year",ylab="FBar",axes=FALSE)
-#   
-#   #axes
-#   axis(1,at=seq(from=5*ceiling(min(yr)/5),to=5*floor(max(yr)/5),by=5),cex.axis=1.5)
-#   axis(2,cex.axis=1.5,las=2)
-#   
-#   #median
-#   lines(yr,med.fbar)
-#   
-#   #mean
-#   #lines(yr,mean.yld)
-#   
-#   #box/whisker
-#   if(box.whisker==1){
-#     for(i in 1:(length(yr))){
-#       boxplot(op.fbar[,i,,,,],range=0.1,add=TRUE,at=yr[i],axes=FALSE,pch=".")
-#     }
-#   }
-#   
-#   #percentiles
-#   points(yr,pct.fbar["10%",],pch=20,col="red")
-#   points(yr,pct.fbar["90%",],pch=20,col="red")  
-#   lines(yr,pct.fbar["10%",],lty=2,col="red")
-#   lines(yr,pct.fbar["90%",],lty=2,col="red")
-#   
-#   #annotations
-#   mtext("(c) FBar",side=3,adj=0,cex=1.5)
-#   
-#   #confidence intervals (assumes normal distribution)
-#   #plot 95%/99% confidence lines?
-#   if(conf.int==1){
-#     lines(yr,mean.fbar-1.96*SD.fbar,lty=2)
-#     lines(yr,mean.fbar+1.96*SD.fbar,lty=2)
-#     lines(yr,mean.fbar-2.58*SD.fbar,lty=2)
-#     lines(yr,mean.fbar+2.58*SD.fbar,lty=2)
-#   }
-#   
-#   #box(which = 'outer', lty = '1373', col = 'red')
-# 
-#   if (!missing(file)) {dev.off()}
-#   
-#   #restore plotting defaults
-#   par(omi=par.omi)
-#   par(mar=par.mar)
-#   
-# }
-# 
-# fMSE2014TACplot<-function(ref,box.whisker=1,conf.int=0,
-#                          yminval="missing",ymaxval="missing",
-#                          file="missing",ext="missing"){
-#   
-#   #read the log file
-#   log <- fread_log(ref)
-#   
-#   #read the output file
-#   if (file.exists(log$outfile)){
-#     dat <- load(log$outfile)
-#   } else {
-#     stop(paste("Cannot find",log$outfile,sep=" "))
-#   }
-#   
-#   #check object CatchWeight was saved by this simulation
-#   if (!exists("op.FTac")){stop(paste("No FTac object for simulation",ref,sep=" "))}
-#   
-#   #TAC in kt
-#   TAC<-op.FTac/1000
-#   
-#   #calculate stats
-#   #median
-#   med.tac <- apply(X=TAC,MARGIN=c("year"),FUN=median)
-#   #mean
-#   mean.tac <- apply(X=TAC,MARGIN=c("year"),FUN=mean)
-#   #SD
-#   SD.tac <- sqrt(apply(X=TAC,MARGIN=c("year"),FUN="var"))
-#   
-#   #percentiles
-#   pct.tac <- apply(X=TAC,MARGIN=c("year"),FUN=quantile,probs=seq(0.05,0.95,by=0.05))
-#   
-#   #outer margins
-#   par.omi <- par("omi")
-#   par(omi=c(0.2,0.2,0,0))
-#   
-#   #individual plot margin lines
-#   par.mar <- par("mar")
-#   par(mar=c(2,2,1,0))
-#   
-#   if (!missing(file)) {
-#     if (!missing(ext)) {
-#       if (ext=="pdf") {
-#         pdf(file=paste(FPRESS.Home(),"\\plots\\",paste(file,"pdf",sep="."),sep=""))
-#       } else if (ext=="png"){
-#         png(filename=paste(FPRESS.Home(),"\\plots\\",paste(file,"png",sep="."),sep=""))
-#       } else {
-#         #default is pdf is not otherwise coded
-#         pdf(file=paste(FPRESS.Home(),"\\plots\\",paste(file,"pdf",sep="."),sep=""))
-#       }
-#     } else {
-#       #default is pdf
-#       pdf(file=paste(FPRESS.Home(),"\\plots\\",paste(file,"pdf",sep="."),sep=""))
-#     }
-#   } 
-#   
-# #   if (!missing(file)) {
-# #     pdf(file=paste(FPRESS.Home(),"\\plots\\",file,sep=""))
-# #     #png(file=paste(FPRESS.Home(),"\\plots\\",file,sep=""),height=480,width=480)
-# #   }
-#   
-#   #empty plot
-#   yr<-seq(log$startyear,len=log$years)
-#   ydum<-seq(0,max(TAC),len=length(yr))
-#   plot(yr,ydum,type="n",xlab="Year",ylab="TAC (kt)",axes=FALSE)
-#   
-#   #axes
-#   axis(1,at=seq(from=5*ceiling(min(yr)/5),to=5*floor(max(yr)/5),by=5))
-#   axis(2)
-#   
-#   #median
-#   lines(yr,med.tac)
-#   
-#   #mean
-#   #lines(yr,mean.yld)
-#   
-#   #box/whisker
-#   if(box.whisker==1){
-#     for(i in 1:(length(yr))){
-#       boxplot(TAC[,i,,,],range=0.1,add=TRUE,at=yr[i],axes=FALSE,pch=".")
-#     }
-#   }
-#   
-#   #percentiles
-#   points(yr,pct.tac["10%",],pch=20,col="red")
-#   points(yr,pct.tac["90%",],pch=20,col="red")  
-#   lines(yr,pct.tac["10%",],lty=2,col="red")
-#   lines(yr,pct.tac["90%",],lty=2,col="red")
-#   
-#   #annotations
-#   mtext("TAC vs Year",side=3,adj=0)
-#   
-#   #confidence intervals (assumes normal distribution)
-#   #plot 95%/99% confidence lines?
-#   if(conf.int==1){
-#     lines(yr,mean.tac-1.96*SD.tac,lty=2)
-#     lines(yr,mean.tac+1.96*SD.tac,lty=2)
-#     lines(yr,mean.tac-2.58*SD.tac,lty=2)
-#     lines(yr,mean.tac+2.58*SD.tac,lty=2)
-#   }
-#   
-#   if (!missing(file)) {dev.off()}
-#   
-#   #restore plotting defaults
-#   par(omi=par.omi)
-#   par(mar=par.mar)
-#   
-# }
-# 
-# 
-# fMSE2014riskplot<-function(ref,yminval="missing",ymaxval="missing",file="missing",ext="missing"){
-#   
-#   #save graphics settings
-#   def.par <- par(no.readonly=TRUE)
-#   
-#   #read the log file
-#   log <- fread_log(ref)
-#   
-#   #read the stat file
-#   stats.file <- paste(".\\stats\\",ref,".dat",sep="")
-#   if (file.exists(stats.file)){
-#     dat <- read.table(stats.file,header=TRUE,sep="\t")
-#   } else {
-#     stop(paste("Cannot find",stats.file,sep=" "))
-#   }
-#   
-#   if (!missing(file)) {
-#     if (!missing(ext)) {
-#       if (ext=="pdf") {
-#         pdf(file=paste(FPRESS.Home(),"\\plots\\",paste(file,"pdf",sep="."),sep=""))
-#       } else if (ext=="png"){
-#         png(filename=paste(FPRESS.Home(),"\\plots\\",paste(file,"png",sep="."),sep=""))
-#       } else {
-#         #default is pdf is not otherwise coded
-#         pdf(file=paste(FPRESS.Home(),"\\plots\\",paste(file,"pdf",sep="."),sep=""))
-#       }
-#     } else {
-#       #default is pdf
-#       pdf(file=paste(FPRESS.Home(),"\\plots\\",paste(file,"pdf",sep="."),sep=""))
-#     }
-#   } 
-#   
-# #   if (!missing(file)) {
-# #     pdf(file=paste(FPRESS.Home(),"\\plots\\",file,sep=""))
-# #     #png(file=paste(FPRESS.Home(),"\\plots\\",file,sep=""),width=480,height=480)
-# #   }
-#   
-#   #outer margins
-#   par.omi <- par("omi")
-#   par(omi=c(0.2,0.3,0.1,0))
-#   
-#   #individual plot margin lines
-#   par.mar <- par("mar")
-#   par(mar=c(2,2,1,0))
-#   
-#   #empty plot
-#   yr<-seq(log$startyear,len=log$years)
-#   ydum<-seq(0,100,len=length(yr))
-#   plot(yr,ydum,type="n",xlab="Year",ylab="Risk",axes=FALSE)
-#   
-#   #axes
-#   axis(1,at=seq(from=5*ceiling(min(yr)/5),to=5*floor(max(yr)/5),by=5),cex.axis=1.5)
-#   axis(2,cex.axis=1.5,las=2)
-#   
-#   #annual risks
-#   lines(dat$From[dat$From==dat$To],dat$Rsk3_ST[dat$From==dat$To])
-#   
-#   #failure rate
-#   lines(dat$From[dat$From==dat$To],dat$FailRate[dat$From==dat$To],col="red")
-# 
-#   #multiannual risks
-#   if (length(dat$From[!dat$From==dat$To])>0) {
-#     for (l in seq(1,length(dat$From[!dat$From==dat$To]))){
-#       lines(seq(dat$From[!dat$From==dat$To][l],dat$To[!dat$From==dat$To][l]),
-#             rep(dat$Rsk3_ST[!dat$From==dat$To][l],length=length(seq(dat$From[!dat$From==dat$To][l],dat$To[!dat$From==dat$To][l]))))
-#     }
-#   }
-#   
-#   #50% risk line
-#   abline(h=50,lty=2)
-#   #0% risk line
-#   abline(h=0,lty=2)
-#   
-#   #annotations
-#   mtext("(d) Risk",side=3,adj=0,cex=1.5)
-#     
-#   #box(which = 'outer', lty = '1373', col = 'red')
-# 
-#   if (!missing(file)) {dev.off()}
-#   
-#   #restore plotting defaults
-#   par(omi=par.omi)
-#   par(mar=par.mar)
-#   
-# }
+fMSE2014fbarplot<-function(ref,box.whisker=1,conf.int=0,
+                          yminval="missing",ymaxval="missing",
+                          file="missing",ext="missing"){
+  
+  #save graphics settings
+  def.par <- par(no.readonly=TRUE)
+  
+  #read the log file
+  log <- fread_log(ref)
+  
+  #read the output file
+  if (file.exists(log$outfile)){
+    dat <- load(log$outfile)
+  } else {
+    stop(paste("Cannot find",log$outfile,sep=" "))
+  }
+  
+  #check object FBar was saved by this simulation
+  if (!exists("op.fbar")){stop(paste("No FBar object for simulation",ref,sep=" "))}
+  
+  #calculate stats
+  #median
+  med.fbar <- apply(X=op.fbar,MARGIN=c("year"),FUN=median)
+  #mean
+  mean.fbar <- apply(X=op.fbar,MARGIN=c("year"),FUN=mean)
+  #SD
+  SD.fbar <- sqrt(apply(X=op.fbar,MARGIN=c("year"),FUN="var"))
+  
+  #percentiles
+  pct.fbar <- apply(X=op.fbar,MARGIN=c("year"),FUN=quantile,probs=seq(0.05,0.95,by=0.05))
+  
+
+  if (!missing(file)) {
+    if (!missing(ext)) {
+      if (ext=="pdf") {
+        pdf(file=paste(fFPRESS_home(),"\\plots\\",paste(file,"pdf",sep="."),sep=""))
+      } else if (ext=="png"){
+        png(filename=paste(fFPRESS_home(),"\\plots\\",paste(file,"png",sep="."),sep=""))
+      } else {
+        #default is pdf is not otherwise coded
+        pdf(file=paste(fFPRESS_home(),"\\plots\\",paste(file,"pdf",sep="."),sep=""))
+      }
+    } else {
+      #default is pdf
+      pdf(file=paste(fFPRESS_home(),"\\plots\\",paste(file,"pdf",sep="."),sep=""))
+    }
+  } 
+  
+ 
+  #outer margins
+  par.omi <- par("omi")
+  par(omi=c(0.2,0.3,0.1,0))
+  
+  #individual plot margin lines
+  par.mar <- par("mar")
+  par(mar=c(2,2,1,0))
+  
+  #empty plot
+  yr<-seq(log$startyear,len=log$years)
+  ydum<-seq(0,0.2,len=length(yr))
+  plot(yr,ydum,type="n",xlab="Year",ylab="FBar",axes=FALSE)
+  
+  #axes
+  axis(1,at=seq(from=5*ceiling(min(yr)/5),to=5*floor(max(yr)/5),by=5),cex.axis=1.5)
+  axis(2,cex.axis=1.5,las=2)
+  
+  #median
+  lines(yr,med.fbar)
+  
+  #mean
+  #lines(yr,mean.yld)
+  
+  #box/whisker
+  if(box.whisker==1){
+    for(i in 1:(length(yr))){
+      boxplot(op.fbar[,i,,,,],range=0.1,add=TRUE,at=yr[i],axes=FALSE,pch=".")
+    }
+  }
+  
+  #percentiles
+  points(yr,pct.fbar["10%",],pch=20,col="red")
+  points(yr,pct.fbar["90%",],pch=20,col="red")  
+  lines(yr,pct.fbar["10%",],lty=2,col="red")
+  lines(yr,pct.fbar["90%",],lty=2,col="red")
+  
+  #annotations
+  mtext("(c) FBar",side=3,adj=0,cex=1.5)
+  
+  #confidence intervals (assumes normal distribution)
+  #plot 95%/99% confidence lines?
+  if(conf.int==1){
+    lines(yr,mean.fbar-1.96*SD.fbar,lty=2)
+    lines(yr,mean.fbar+1.96*SD.fbar,lty=2)
+    lines(yr,mean.fbar-2.58*SD.fbar,lty=2)
+    lines(yr,mean.fbar+2.58*SD.fbar,lty=2)
+  }
+  
+  #box(which = 'outer', lty = '1373', col = 'red')
+
+  if (!missing(file)) {dev.off()}
+  
+  #restore plotting defaults
+  par(omi=par.omi)
+  par(mar=par.mar)
+  
+}
+
+fMSE2014TACplot<-function(ref,box.whisker=1,conf.int=0,
+                         yminval="missing",ymaxval="missing",
+                         file="missing",ext="missing"){
+  
+  #read the log file
+  log <- fread_log(ref)
+  
+  #read the output file
+  if (file.exists(log$outfile)){
+    dat <- load(log$outfile)
+  } else {
+    stop(paste("Cannot find",log$outfile,sep=" "))
+  }
+  
+  #check object CatchWeight was saved by this simulation
+  if (!exists("op.FTac")){stop(paste("No FTac object for simulation",ref,sep=" "))}
+  
+  #TAC in kt
+  TAC<-op.FTac/1000
+  
+  #calculate stats
+  #median
+  med.tac <- apply(X=TAC,MARGIN=c("year"),FUN=median)
+  #mean
+  mean.tac <- apply(X=TAC,MARGIN=c("year"),FUN=mean)
+  #SD
+  SD.tac <- sqrt(apply(X=TAC,MARGIN=c("year"),FUN="var"))
+  
+  #percentiles
+  pct.tac <- apply(X=TAC,MARGIN=c("year"),FUN=quantile,probs=seq(0.05,0.95,by=0.05))
+  
+  #outer margins
+  par.omi <- par("omi")
+  par(omi=c(0.2,0.2,0,0))
+  
+  #individual plot margin lines
+  par.mar <- par("mar")
+  par(mar=c(2,2,1,0))
+  
+  if (!missing(file)) {
+    if (!missing(ext)) {
+      if (ext=="pdf") {
+        pdf(file=paste(fFPRESS_home(),"\\plots\\",paste(file,"pdf",sep="."),sep=""))
+      } else if (ext=="png"){
+        png(filename=paste(fFPRESS_home(),"\\plots\\",paste(file,"png",sep="."),sep=""))
+      } else {
+        #default is pdf is not otherwise coded
+        pdf(file=paste(fFPRESS_home(),"\\plots\\",paste(file,"pdf",sep="."),sep=""))
+      }
+    } else {
+      #default is pdf
+      pdf(file=paste(fFPRESS_home(),"\\plots\\",paste(file,"pdf",sep="."),sep=""))
+    }
+  } 
+  
+  #empty plot
+  yr<-seq(log$startyear,len=log$years)
+  ydum<-seq(0,max(TAC),len=length(yr))
+  plot(yr,ydum,type="n",xlab="Year",ylab="TAC (kt)",axes=FALSE)
+  
+  #axes
+  axis(1,at=seq(from=5*ceiling(min(yr)/5),to=5*floor(max(yr)/5),by=5))
+  axis(2)
+  
+  #median
+  lines(yr,med.tac)
+  
+  #mean
+  #lines(yr,mean.yld)
+  
+  #box/whisker
+  if(box.whisker==1){
+    for(i in 1:(length(yr))){
+      boxplot(TAC[,i,,,],range=0.1,add=TRUE,at=yr[i],axes=FALSE,pch=".")
+    }
+  }
+  
+  #percentiles
+  points(yr,pct.tac["10%",],pch=20,col="red")
+  points(yr,pct.tac["90%",],pch=20,col="red")  
+  lines(yr,pct.tac["10%",],lty=2,col="red")
+  lines(yr,pct.tac["90%",],lty=2,col="red")
+  
+  #annotations
+  mtext("TAC vs Year",side=3,adj=0)
+  
+  #confidence intervals (assumes normal distribution)
+  #plot 95%/99% confidence lines?
+  if(conf.int==1){
+    lines(yr,mean.tac-1.96*SD.tac,lty=2)
+    lines(yr,mean.tac+1.96*SD.tac,lty=2)
+    lines(yr,mean.tac-2.58*SD.tac,lty=2)
+    lines(yr,mean.tac+2.58*SD.tac,lty=2)
+  }
+  
+  if (!missing(file)) {dev.off()}
+  
+  #restore plotting defaults
+  par(omi=par.omi)
+  par(mar=par.mar)
+  
+}
+
+
+fMSE2014riskplot<-function(ref,yminval="missing",ymaxval="missing",file="missing",ext="missing"){
+  
+  #save graphics settings
+  def.par <- par(no.readonly=TRUE)
+  
+  #read the log file
+  log <- fread_log(ref)
+  
+  #read the stat file
+  stats.file <- paste(".\\stats\\",ref,".dat",sep="")
+  if (file.exists(stats.file)){
+    dat <- read.table(stats.file,header=TRUE,sep="\t")
+  } else {
+    stop(paste("Cannot find",stats.file,sep=" "))
+  }
+  
+  if (!missing(file)) {
+    if (!missing(ext)) {
+      if (ext=="pdf") {
+        pdf(file=paste(fFPRESS_home(),"\\plots\\",paste(file,"pdf",sep="."),sep=""))
+      } else if (ext=="png"){
+        png(filename=paste(fFPRESS_home(),"\\plots\\",paste(file,"png",sep="."),sep=""))
+      } else {
+        #default is pdf is not otherwise coded
+        pdf(file=paste(fFPRESS_home(),"\\plots\\",paste(file,"pdf",sep="."),sep=""))
+      }
+    } else {
+      #default is pdf
+      pdf(file=paste(fFPRESS_home(),"\\plots\\",paste(file,"pdf",sep="."),sep=""))
+    }
+  } 
+  
+  #outer margins
+  par.omi <- par("omi")
+  par(omi=c(0.2,0.3,0.1,0))
+  
+  #individual plot margin lines
+  par.mar <- par("mar")
+  par(mar=c(2,2,1,0))
+  
+  #empty plot
+  yr<-seq(log$startyear,len=log$years)
+  ydum<-seq(0,100,len=length(yr))
+  plot(yr,ydum,type="n",xlab="Year",ylab="Risk",axes=FALSE)
+  
+  #axes
+  axis(1,at=seq(from=5*ceiling(min(yr)/5),to=5*floor(max(yr)/5),by=5),cex.axis=1.5)
+  axis(2,cex.axis=1.5,las=2)
+  
+  #annual risks
+  lines(dat$From[dat$From==dat$To],dat$Rsk3_ST[dat$From==dat$To])
+  
+  #failure rate
+  lines(dat$From[dat$From==dat$To],dat$FailRate[dat$From==dat$To],col="red")
+
+  #multiannual risks
+  if (length(dat$From[!dat$From==dat$To])>0) {
+    for (l in seq(1,length(dat$From[!dat$From==dat$To]))){
+      lines(seq(dat$From[!dat$From==dat$To][l],dat$To[!dat$From==dat$To][l]),
+            rep(dat$Rsk3_ST[!dat$From==dat$To][l],length=length(seq(dat$From[!dat$From==dat$To][l],dat$To[!dat$From==dat$To][l]))))
+    }
+  }
+  
+  #50% risk line
+  abline(h=50,lty=2)
+  #0% risk line
+  abline(h=0,lty=2)
+  
+  #annotations
+  mtext("(d) Risk",side=3,adj=0,cex=1.5)
+    
+  #box(which = 'outer', lty = '1373', col = 'red')
+
+  if (!missing(file)) {dev.off()}
+  
+  #restore plotting defaults
+  par(omi=par.omi)
+  par(mar=par.mar)
+  
+}
 
 
 fPlotFSSB <- function(ref,sfile,pfile,title,subtitle,ylim="missing",xlim="missing"){
@@ -630,6 +611,181 @@ fPlotFSSB <- function(ref,sfile,pfile,title,subtitle,ylim="missing",xlim="missin
   #mtext("Risk 3",side=4,line=2)
   mtext("Risk 1",side=4,line=2)
 
+  dev.off()
+  
+}
+
+
+fPlotMSYJose <- function(ref){
+  
+  #plot of long term (MSY) simulations based on code from Jose.
+  #ref is the MSY run reference
+  
+  #read in the simulation settings
+  ofile <- paste0(fFPRESS_home(),"\\options\\options",ref,".xml")
+  lopt <- fread_options(ofile,match.call())
+  
+  #read the statistics
+  sfile <- paste0(fFPRESS_home(),"\\stats\\",ref,".dat")
+  Model.res <- read.table(file = sfile, header = TRUE, sep = "\t")
+  
+  #output (plot) file
+  pfile <- paste0(fFPRESS_home(),"\\plots\\MSY",ref,".pdf")
+
+  #updated assessment weights for conditioning
+  #bhprop <- 0.46
+  #rkprop <- 0.32
+  #Blim <- 600700  
+  
+  #SALY assessment for conditioning
+  bhprop <- 0.46
+  rkprop <- 0.32
+  Blim <- 453269  
+  
+  #rename some cols so that Jose's code works without modification
+  names(Model.res)[names(Model.res)=="FTAC"] <- "F"
+  names(Model.res)[names(Model.res)=="SSBJ1_0.1"] <- "SSB10"
+  names(Model.res)[names(Model.res)=="SSBJ1_0.5"] <- "SSB50"
+  names(Model.res)[names(Model.res)=="SSBJ1_0.9"] <- "SSB90"
+  names(Model.res)[names(Model.res)=="Mean.SSBJ1"] <- "SSBmn"
+  names(Model.res)[names(Model.res)=="Rsk1_J1"] <- "risk1"
+  names(Model.res)[names(Model.res)=="Rsk2_J1"] <- "risk2"
+  names(Model.res)[names(Model.res)=="Rsk3_J1"] <- "risk3"
+  names(Model.res)[names(Model.res)=="Yld0.1"] <- "Y10"
+  names(Model.res)[names(Model.res)=="Yld0.5"] <- "Y50"
+  names(Model.res)[names(Model.res)=="Yld0.9"] <- "Y90"
+  names(Model.res)[names(Model.res)=="Mean.Yld"] <- "Ymn"
+  names(Model.res)[names(Model.res)=="Rec"] <- "Rmn"
+  names(Model.res)[names(Model.res)=="Y.R"] <- "Ymn.Rmn"
+  
+  #some more updates to harmonize units
+  #convert SSB from Mt to t
+  Model.res["SSB10"] <- 1e6*Model.res["SSB10"]
+  Model.res["SSB50"] <- 1e6*Model.res["SSB50"]
+  Model.res["SSB90"] <- 1e6*Model.res["SSB90"]
+  Model.res["SSBmn"] <- 1e6*Model.res["SSBmn"]
+  #yield from kt to t
+  Model.res["Y10"] <- 1e3*Model.res["Y10"]
+  Model.res["Y50"] <- 1e3*Model.res["Y50"]
+  Model.res["Y90"] <- 1e3*Model.res["Y90"]
+  Model.res["Ymn"] <- 1e3*Model.res["Ymn"]
+  
+  #MSY parameters - F, Median SSB and Median Yield corresponding to fishing mortality that results in max median yield
+  Fmsy <- Model.res[Model.res[,"Y50"]==max(Model.res[,"Y50"]),"F"]
+  Bmsy <- Model.res[Model.res[,"Y50"]==max(Model.res[,"Y50"]),"SSB50"]
+  Cmsy <- Model.res[Model.res[,"Y50"]==max(Model.res[,"Y50"]),"Y50"]
+
+  #MSY parameter ranges (see WKMSYREF3 report for details)
+  Y95 <- 0.95*max(Model.res[,"Y50"])
+  Fmsylo2 <- min(Model.res[Model.res[,"Y50"] >= Y95,"F"])
+  Ylo2 <- Model.res[Fmsylo2/0.005+1,"Y50"]
+  Bmsylo2 <- Model.res[Fmsylo2/0.005+1,"SSB50"]
+  
+  if (Ylo2 > Y95) {
+    Fmsylo1 <- Fmsylo2-0.005
+    Ylo1 <- Model.res[Fmsylo1/0.005+1,"Y50"]
+    Bmsylo1 <- Model.res[Fmsylo1/0.005+1,"SSB50"]
+    Fmsylo <- Fmsylo1+0.005*(Y95-Ylo1)/(Ylo2-Ylo1)
+    Bmsylo <- Bmsylo1+(Bmsylo2-Bmsylo1)*(Y95-Ylo1)/(Ylo2-Ylo1)
+  } else {
+    Fmsylo <- Fmsylo2
+    Bmsylo <- Bmsylo2
+  }
+  
+  Fmsyhi1 <- max(Model.res[Model.res[,"Y50"]>=Y95,"F"])
+  Yhi1 <- Model.res[Fmsyhi1/0.005+1,"Y50"]
+  Bmsyhi1 <- Model.res[Fmsyhi1/0.005+1,"SSB50"]
+  if (Yhi1 > Y95) {
+    Fmsyhi2 <- Fmsyhi1+0.005
+    Yhi2 <- Model.res[Fmsyhi2/0.005+1,"Y50"]
+    Bmsyhi2 <- Model.res[Fmsyhi2/0.005+1,"SSB50"]
+    Fmsyhi <- Fmsyhi1+0.005*(Y95-Yhi1)/(Yhi2-Yhi1)
+    Bmsyhi <- Bmsyhi1+(Bmsyhi2-Bmsyhi1)*(Y95-Yhi1)/(Yhi2-Yhi1)
+  } else {
+    Fmsyhi <- Fmsyhi1
+    Bmsyhi <- Bmsyhi1
+  }
+  
+  F052<-min(Model.res[Model.res[,"risk1"]>=5,"F"])
+  R2<-Model.res[F052/0.005+1,"risk1"]
+  Y2<-Model.res[F052/0.005+1,"Y50"]
+  if (R2>5) {
+    F051<-F052-0.005
+    R1<-Model.res[F051/0.005+1,"risk1"]
+    Y1<-Model.res[F051/0.005+1,"Y50"]
+    F05<-F051+0.005*(5-R1)/(R2-R1)
+    Y05<-Y1+(Y2-Y1)*(5-R1)/(R2-R1)
+  } else {F05<-F052;Y05<-Y2}
+  if (F05<Fmsy) {
+    Ymsybot<-0.95*Y05
+    Fmsybot2<-min(Model.res[Model.res[,"Y50"]>=Ymsybot,"F"])
+    Y2<-YvsF[Fmsybot2/0.005+1,"Y50"]
+    if (Y2>Ymsybot) {
+      Fmsybot1<-Fmsybot2-0.005
+      Y1<-Model.res[Fmsybot1/0.005+1,"Y50"]
+      Fmsybot<-Fmsybot1+0.005*(Ymsybot-Y1)/(Y2-Y1)
+    } else Fmsybot<-Fmsybot2
+  } else Fmsybot <-Fmsylo
+
+  #initiate the graphics device, 12 inches by 5 inches
+  pdf(file = pfile, width = 12, height = 5)
+
+  #plot layout and margins
+  par(mfrow=c(1,2))
+  par(mar=c(5, 5, 4, 4) + 0.1)
+
+  #Yield vs F
+  if (lopt$onceoff) {
+    plot(Model.res$F, Model.res$Y90/1e3, ylim = c(0,.3e6/1e3), xlab = "F", ylab = "Yield (kt)",
+         type = "l", lty = "dotted", lwd = 1, col = "black", main = "Yield and Risk 1 vs. F")
+  } else {
+    plot(Model.res$F, Model.res$Y90/1e3, ylim = c(0,.15e6/1e3), xlab = "F", ylab = "Yield (kt)",
+         type = "l", lty = "dotted", lwd = 1, col = "black", main = "Yield and Risk 1 vs. F")
+  }
+  
+  lines(Model.res$F,Model.res$Y50/1e3,type="l",lty="solid",lwd=2)
+  lines(Model.res$F,Model.res$Y10/1e3,type="l",lty="dotted",lwd=1)
+  lines(Model.res$F,Model.res$Ymn/1e3,type="l",lty="solid",lwd=1)
+  abline(v=Fmsy,col="red",lwd=2)
+  abline(v=Fmsylo,col="red",lty=2)
+  abline(v=Fmsyhi,col="red",lty=2)
+  #abline(v=F05,col="pink",lwd=2)
+  
+  par(new=T)
+  plot(Model.res$F,Model.res$risk1,ylim=c(0,100),axes=F,xlab="",ylab="",type="l",lty="dashed",lwd=2,col="black")
+  axis(4,ylim=c(0,max(Model.res$risk1)),lwd=1,line=0)
+  mtext(4,text="Risk 1",line=2.5)
+  mtext(3,text=paste("bh=",100*bhprop,"%, rk=",100*rkprop,"%, hs=",100*(1-bhprop-rkprop),"%, Blim=",round(Blim),sep=""),line=0.5)
+  mtext(1,text=paste("Fmsy=",round(Fmsy,digits=3),sep=""),line=2,cex=0.6,adj=1)
+  mtext(1,text=paste("Fmsylo=",round(Fmsylo,digits=3),", Fmsyhi=",round(Fmsyhi,digits=3),sep=""),line=2.5,cex=0.6,adj=1)
+  mtext(1,text=paste("Cmsy=",round(Cmsy),", F05=",round(F05,digits=3),sep=""),line=3,cex=0.6,adj=1)
+  
+  #SSB vs F
+  if (lopt$onceoff) {
+    plot(Model.res$F, Model.res$SSB90/1e6, ylim = c(0,7e6/1e6), xlab = "F", ylab = "SSB (Mt)", 
+         type = "l", lty = "dotted", lwd = 1, col = "black", main = "SSB and Risk 1 vs. F")
+  } else {
+    plot(Model.res$F, Model.res$SSB90/1e6, ylim = c(0,4e6/1e6), xlab = "F", ylab = "SSB (Mt)",
+         type = "l", lty = "dotted", lwd = 1, col = "black", main = "SSB and Risk 1 vs. F")  
+  }
+  lines(Model.res$F,Model.res$SSB50/1e6,type="l",lty="solid",lwd=2)
+  lines(Model.res$F,Model.res$SSB10/1e6,type="l",lty="dotted",lwd=1)
+  lines(Model.res$F,Model.res$SSBmn/1e6,type="l",lty="solid",lwd=1)
+  
+  par(new=T)
+  #plot(YvsF$F,YvsF$risk1,ylim=c(0,max(YvsF$risk1)),axes=F,xlab="",ylab="",type="l",lty="dashed",lwd=2,col="black")
+  plot(Model.res$F,Model.res$risk1,ylim=c(0,100),axes=F,xlab="",ylab="",type="l",lty="dashed",lwd=2,col="black")
+  axis(4,ylim=c(0,max(Model.res$risk1)),lwd=1,line=0)
+  mtext(4,text="Risk 1",line=2.5)
+  mtext(3,text=paste("fspike=",fspike,", fscor=",fscor,", fsigR=",fsigR,", fbcor=",fbcor,", fsrdev=",fsrdev,sep=""),line=0.5)
+  mtext(1,text=paste("Bmsy=",round(Bmsy),sep=""),line=2,cex=0.6,adj=1)
+  mtext(1,text=paste("Bmsylo=",round(Bmsylo),", Bmsyhi=",round(Bmsyhi),sep=""),line=2.5,cex=0.6,adj=1)
+  abline(v=Fmsy,col="red",lwd=2)
+  abline(v=Fmsylo,col="red",lty=2)
+  abline(v=Fmsyhi,col="red",lty=2)
+  #abline(v=F05,col="pink",lwd=2)
+  
+  
   dev.off()
   
 }
@@ -979,53 +1135,53 @@ fCalcMSE2014stats <- function(ref, fname, period, nits=NULL, ssbref=1.24e6){
 }
 
 
-# fgenLatex <- function(opt_file) {
-# 
-#   #generate a latex table from stats files
-#   #reads stats files from stats directory, write .tex file into tables directory
-#   #directories/stat files need to exist - does not check!
-#   
-#   require(xtable)
-#   require(dplyr)
-#   
-#   infile <- paste0(".\\stats\\",opt_file,".dat")
-#   outfile <- paste0(".\\tables\\",opt_file,"_stats.tex")
-#   
-#   df <- read.table(infile,header=TRUE,sep="\t")
-#   
-#   #exclude annual stats
-#   df <- filter(df,!(From==To))
-# 
-#   #TAC variability as percentages, increases/decreases in kt
-#   df <- mutate(df,TACup = as.integer(round(100*(TACinc/(To-From)))))
-#   df <- mutate(df,TACdn = as.integer(round(100*(TACdec/(To-From)))))
-#   df <- mutate(df,Avgup = round(AvgInc/1000))
-#   df <- mutate(df,Avgdn = round(AvgDec/1000))
-#   
-#   df <- mutate(df,SSB = round(SSBST_0.5,2))
-#   df <- mutate(df,Yld = round(Yld0.5,2))
-#   df <- mutate(df,Risk1 = round(Rsk1_ST))
-#   df <- mutate(df,Risk2 = round(Rsk2_ST))
-#   df <- mutate(df,Risk3 = round(Rsk3_ST))
-#   
-#   #convert cols to characters (to append non numerics)
-#   df[] <- lapply(df,as.character)
-#   
-#   df <- mutate(df,TACu = paste0(TACup,"%"))
-#   df <- mutate(df,TACd = paste0(TACdn,"%"))
-#   df <- mutate(df,Rsk1 = paste0(Risk1,"%"))
-#   df <- mutate(df,Rsk2 = paste0(Risk2,"%"))
-#   df <- mutate(df,Rsk3 = paste0(Risk3,"%"))
-#   df <- mutate(df,FR = paste0(FailRate,"%"))
-#   
-#   df <- select(df,From,To,SSB,Yld,Rsk1,Rsk2,Rsk3,TACu,Avgup,TACd,Avgdn,FR)
-#   
-#   t <- xtable(df)
-#   
-#   print(t, type = "latex", file = outfile, include.rownames=FALSE, table.placement="H")
-#   
-# }
-# 
+fgenLatex <- function(opt_file) {
+
+  #generate a latex table from stats files
+  #reads stats files from stats directory, write .tex file into tables directory
+  #directories/stat files need to exist - does not check!
+  
+  require(xtable)
+  require(dplyr)
+  
+  infile <- paste0(".\\stats\\",opt_file,".dat")
+  outfile <- paste0(".\\tables\\",opt_file,"_stats.tex")
+  
+  df <- read.table(infile,header=TRUE,sep="\t")
+  
+  #exclude annual stats
+  df <- filter(df,!(From==To))
+
+  #TAC variability as percentages, increases/decreases in kt
+  df <- mutate(df,TACup = as.integer(round(100*(TACinc/(To-From)))))
+  df <- mutate(df,TACdn = as.integer(round(100*(TACdec/(To-From)))))
+  df <- mutate(df,Avgup = round(AvgInc/1000))
+  df <- mutate(df,Avgdn = round(AvgDec/1000))
+  
+  df <- mutate(df,SSB = round(SSBST_0.5,2))
+  df <- mutate(df,Yld = round(Yld0.5,2))
+  df <- mutate(df,Risk1 = round(Rsk1_ST))
+  df <- mutate(df,Risk2 = round(Rsk2_ST))
+  df <- mutate(df,Risk3 = round(Rsk3_ST))
+  
+  #convert cols to characters (to append non numerics)
+  df[] <- lapply(df,as.character)
+  
+  df <- mutate(df,TACu = paste0(TACup,"%"))
+  df <- mutate(df,TACd = paste0(TACdn,"%"))
+  df <- mutate(df,Rsk1 = paste0(Risk1,"%"))
+  df <- mutate(df,Rsk2 = paste0(Risk2,"%"))
+  df <- mutate(df,Rsk3 = paste0(Risk3,"%"))
+  df <- mutate(df,FR = paste0(FailRate,"%"))
+  
+  df <- select(df,From,To,SSB,Yld,Rsk1,Rsk2,Rsk3,TACu,Avgup,TACd,Avgdn,FR)
+  
+  t <- xtable(df)
+  
+  print(t, type = "latex", file = outfile, include.rownames=FALSE, table.placement="H")
+  
+}
+
 # fgencsv <- function(opt_file) {
 #   
 #   #generate a csv file from stats files
@@ -1077,4 +1233,5 @@ fCalcMSE2014stats <- function(ref, fname, period, nits=NULL, ssbref=1.24e6){
 #               quote = FALSE)
 #   
 # }
+
 

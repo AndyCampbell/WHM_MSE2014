@@ -2,7 +2,7 @@
 
 #15/09/2014
 #fRandSR <- function(props=c(0.49,0.28,0.23),nits){
-f.RandSR <- function(props=c(0.46,0.32,0.22),nits){
+fRandSR <- function(props=c(0.46,0.32,0.22),nits){
     
   #model proportions for BH,RK and HS (in THAT order!)
   #randomise SR models according to the proportions supplied
@@ -98,8 +98,7 @@ fSADegg <- function(iter,nits,SADparams,EggHist,StockWeights,NatMor,Mat,
   
 }
 
-fSADsr <- function(iter,SADparams,SRpairs,SR.types,startyear,years,det=FALSE){
-#                    srDev_bh="missing",srDev_rk="missing",srDev_hs="missing"){
+fSADsr <- function(iter, SADparams, SRpairs, SR.types, startyear, years, det=FALSE){
     
   #function returns SR details in a list
   

@@ -7,7 +7,7 @@
 #Sys.setenv("V:ffactor.r"="2.0")
 
 #assign the environment var V:ffactor.r
-set.env.var("V:ffactor.r","2.0")
+fset_env_var("V:ffactor.r","2.0")
 
 ######################################
 ############################################################ 
