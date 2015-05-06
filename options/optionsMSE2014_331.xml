@@ -1,17 +1,15 @@
 <FPRESS>
 	<stockname>MSE2014_331</stockname>
-	<fpress_home>C:\FPRESS\HOM-WEST\MSE2014\Baseline</fpress_home>
-	<outfolder>C:\FPRESS\HOM-WEST\MSE2014\Baseline</outfolder>
-	<datfile>C:\FPRESS\HOM-WEST\MSE2014\Baseline\indata\SADMSE2014_WHMParams_15_09_2014.dat</datfile>
-	<recfile>C:\FPRESS\HOM-WEST\MSE2014\Baseline\indata\WHM_SRPairs.dat</recfile>
-	<catchfile>C:\FPRESS\HOM-WEST\MSE2014\Baseline\indata\WHM_Catches.dat</catchfile>
-	<SRfile>C:\FPRESS\HOM-WEST\MSE2014\Baseline\indata\WHM_SRBayesian.dat</SRfile>
-	<Eggfile>C:\FPRESS\HOM-WEST\MSE2014\Baseline\indata\WHM_Eggs.dat</Eggfile>
-	<SWfile>C:\FPRESS\HOM-WEST\MSE2014\Baseline\indata\WHM_StockWeights.dat</SWfile>
-	<Numfile>C:\FPRESS\HOM-WEST\MSE2014\Baseline\indata\SADMSE2014_NumAtAge_15_09_2014.dat</Numfile>
-	<Ffile>C:\FPRESS\HOM-WEST\MSE2014\Baseline\indata\SADMSE2014_FAtAge_15_09_2014.dat</Ffile>
-	<NatMorfile>C:\FPRESS\HOM-WEST\MSE2014\Baseline\indata\WHM_NaturalMortality.dat</NatMorfile>
-	<Matfile>C:\FPRESS\HOM-WEST\MSE2014\Baseline\indata\WHM_Maturity.dat</Matfile>
+	<datfile>\indata\SADMSE2014_WHMParams_15_09_2014.dat</datfile>
+	<recfile>\indata\WHM_SRPairs.dat</recfile>
+	<catchfile>\indata\WHM_Catches.dat</catchfile>
+	<SRfile>\indata\WHM_SRBayesian.dat</SRfile>
+	<Eggfile>\indata\WHM_Eggs.dat</Eggfile>
+	<SWfile>\indata\WHM_StockWeights.dat</SWfile>
+	<Numfile>\indata\SADMSE2014_NumAtAge_15_09_2014.dat</Numfile>
+	<Ffile>\indata\SADMSE2014_FAtAge_15_09_2014.dat</Ffile>
+	<NatMorfile>\indata\WHM_NaturalMortality.dat</NatMorfile>
+	<Matfile>\indata\WHM_Maturity.dat</Matfile>
 	<minage>0</minage>
 	<maxage>11</maxage>
 	<fbarmin>1</fbarmin>
