@@ -20,7 +20,23 @@ outdata.dir <- paste(fFPRESS_home(),"\\outdata",sep="");
 #is issued if the folder already exists
 dir.create(outdata.dir, recursive = TRUE, showWarnings = FALSE)
 
+#create plots directory
+plots.dir <- paste(fFPRESS_home(),"\\plots",sep="");
+#create the directory, suppress the showWarnings so that no warning
+#is issued if the folder already exists
+dir.create(plots.dir, recursive = TRUE, showWarnings = FALSE)
 
+#create stats directory
+stats.dir <- paste(fFPRESS_home(),"\\stats",sep="");
+#create the directory, suppress the showWarnings so that no warning
+#is issued if the folder already exists
+dir.create(stats.dir, recursive = TRUE, showWarnings = FALSE)
+
+#create tables directory
+tables.dir <- paste(fFPRESS_home(),"\\tables",sep="");
+#create the directory, suppress the showWarnings so that no warning
+#is issued if the folder already exists
+dir.create(tables.dir, recursive = TRUE, showWarnings = FALSE)
 
 #long term (MSY investigation) runs, no HCR applied
 #options files - two different assessments are used for conditioning. 
