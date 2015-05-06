@@ -1,15 +1,15 @@
 <FPRESS>
 	<stockname>MSE2014_361_Final</stockname>
-	<datfile>\indata\SADMSE2014_WHMParams_15_09_2014.dat</datfile>
-	<SRfile>\indata\SADMSE2014_SRPairs_15_09_2014.dat</SRfile>
-	<catchfile>\indata\WHM_Catches.dat</catchfile>
-	<Eggfile>\indata\WHM_Eggs.dat</Eggfile>
-	<SWfile>\indata\WHM_StockWeights.dat</SWfile>
-	<CWfile>\indata\WHM_CatchWeights.dat</CWfile>
-	<Numfile>\indata\SADMSE2014_NumAtAge_15_09_2014.dat</Numfile>
-	<Ffile>\indata\SADMSE2014_FAtAge_15_09_2014.dat</Ffile>
-	<NatMorfile>\indata\WHM_NaturalMortality.dat</NatMorfile>
-	<Matfile>\indata\WHM_Maturity.dat</Matfile>
+	<datfile>.\indata\SADMSE2014_WHMParams_15_09_2014.dat</datfile>
+	<SRfile>.\indata\SADMSE2014_SRPairs_15_09_2014.dat</SRfile>
+	<catchfile>.\indata\WHM_Catches.dat</catchfile>
+	<Eggfile>.\indata\WHM_Eggs.dat</Eggfile>
+	<SWfile>.\indata\WHM_StockWeights.dat</SWfile>
+	<CWfile>.\indata\WHM_CatchWeights.dat</CWfile>
+	<Numfile>.\indata\SADMSE2014_NumAtAge_15_09_2014.dat</Numfile>
+	<Ffile>.\indata\SADMSE2014_FAtAge_15_09_2014.dat</Ffile>
+	<NatMorfile>.\indata\WHM_NaturalMortality.dat</NatMorfile>
+	<Matfile>.\indata\WHM_Maturity.dat</Matfile>
 	<minage>0</minage>
 	<maxage>11</maxage>
 	<fbarmin>1</fbarmin>
